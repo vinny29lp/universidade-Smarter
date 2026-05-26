@@ -2860,37 +2860,21 @@ async function handleAddUser(){
   }
 
   if(!name||!email||!pass){ showMsg('Preencha todos os campos.', false); return; }
-  if(pass.length < 8){ showMsg('Senha deve ter pelo menos 8 caracteres.', false); return; }
+  if(pass.length < 6){ showMsg('Senha deve ter pelo menos 6 caracteres.', false); return; }
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ showMsg('E-mail inválido.', false); return; }
 
   $('addUserBtn').disabled = true;
   $('addUserBtn').textContent = 'Cadastrando…';
 
-  // Create user in Supabase Auth
-  // signUp with emailRedirectTo — keeps admin session in v2 if email confirmation is required
-  const { data, error } = await sb.auth.signUp({
-    email,
-    password: pass,
-    options: { data: { name }, emailRedirectTo: window.location.origin + window.location.pathname }
-  });
+  // Use Edge Function (service_role) so email is auto-confirmed and user can log in immediately
+  const res = await adminUserAction('create-user', null, { email, name, password: pass });
 
   $('addUserBtn').disabled = false;
   $('addUserBtn').textContent = 'Cadastrar usuário';
 
-  if(error){
-    showMsg('Erro: ' + error.message, false);
+  if(!res.ok){
+    showMsg('Erro: ' + (res.error || 'Falha ao criar usuário'), false);
     return;
-  }
-
-  // If user was created but email confirmation is required, data.user exists but session is null
-  // The trigger will create the profile. For immediate panel display, insert profile manually:
-  if(data.user){
-    await sb.from('profiles').upsert({
-      id: data.user.id,
-      name,
-      email,
-      is_admin: false
-    }, { onConflict: 'id' });
   }
 
   // Build invite email
