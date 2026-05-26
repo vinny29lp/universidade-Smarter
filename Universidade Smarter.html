@@ -554,10 +554,28 @@
   .app.authed{display:grid}
 
   /* Admin-only visibility */
-  .nav-admin-only, .admin-only{display:none}
-  body.is-admin .nav-admin-only{display:block}
-  body.is-admin .admin-only{display:none}
-  body.is-admin .admin-only.active{display:block}
+
+  /* ── Admin panel styles (section injected via JS for admins only) ── */
+  .stat-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:28px}
+  @media(max-width:900px){.stat-cards{grid-template-columns:repeat(2,1fr)}}
+  .progress-mini-wrap{display:flex;align-items:center;gap:8px}
+  .progress-mini{height:4px;border-radius:99px;background:var(--line);flex:1;overflow:hidden}
+  .progress-mini-fill{height:100%;background:var(--gold);border-radius:99px;transition:width .3s}
+  .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
+  .badge.grey{background:#f1f3f7;color:#5a6478}
+  .badge.blue{background:#EFF6FF;color:#1D4ED8}
+  .badge.green{background:#ECFDF5;color:#065F46}
+  .detail-row{display:none}
+  .detail-row.open{display:table-row}
+  .module-checklist{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:14px 0}
+  @media(max-width:700px){.module-checklist{grid-template-columns:repeat(2,1fr)}}
+  .mc-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:5px 8px;border-radius:7px;background:var(--paper-2)}
+  .mc-item.done{background:#ECFDF5;color:#065F46}
+  .mc-item .mc-icon{width:16px;height:16px;border-radius:50%;background:var(--line);flex:none;display:grid;place-items:center;font-size:9px}
+  .mc-item.done .mc-icon{background:#10B981;color:#fff}
+  .ua-btn.details{background:var(--ink);color:#fff}
+  .ua-btn.details:hover{background:var(--ink-3)}
+
 
   /* User profile / logout in topbar */
   .user-pill{
@@ -671,8 +689,6 @@
       <div class="nav-item" data-go="m19"><div class="nav-num"><span>19</span></div>Cultura Smarter</div>
       <div class="nav-item" data-go="m20"><div class="nav-num"><span>20</span></div>Próximo: o sistema</div>
 
-      <div class="nav-section nav-admin-only">Administração</div>
-      <div class="nav-item nav-admin-only" data-go="admin"><div class="nav-num"><span>⚙</span></div>Painel de usuários</div>
     </nav>
   </aside>
 
@@ -2315,44 +2331,6 @@
         </div>
       </section>
 
-      <!-- ============== ADMIN PANEL ============== -->
-      <section class="module admin-only" id="admin">
-        <div class="module-tag">Administração</div>
-        <h1 class="module-title">Painel de usuários</h1>
-        <p class="module-lede">Cadastre, edite e gerencie quem tem acesso à Universidade Smarter. Cada usuário cadastrado recebe um e-mail com login, senha e link de acesso.</p>
-
-        <div class="grid grid-4" style="margin-top:24px;margin-bottom:8px">
-          <div class="stat"><div class="label">Usuários ativos</div><div class="value" id="userCount">0</div><div class="sub">Com acesso liberado</div></div>
-          <div class="stat"><div class="label">Acessos no mês</div><div class="value" id="loginCount">0</div><div class="sub">Logins registrados</div></div>
-          <div class="stat"><div class="label">Último cadastro</div><div class="value" id="lastUser" style="font-size:14px;font-weight:600;color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif">—</div><div class="sub">Nome do mais recente</div></div>
-          <div class="stat"><div class="label">Admin</div><div class="value" style="font-size:14px;font-weight:600;color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif">Você</div><div class="sub">admin@smarterestagios.com.br</div></div>
-        </div>
-
-        <h2>Cadastrar novo usuário</h2>
-        <div class="card admin-form">
-          <div class="form-row">
-            <div class="form-field"><label>Nome completo</label><input type="text" id="newName" placeholder="Ex: Maria da Silva" /></div>
-            <div class="form-field"><label>E-mail</label><input type="email" id="newEmail" placeholder="maria@smarterestagios.com.br" /></div>
-            <div class="form-field"><label>Senha</label><input type="text" id="newPass" placeholder="Mínimo 6 caracteres" /></div>
-            <div class="form-field" style="display:flex;align-items:flex-end"><button class="btn gold" id="addUserBtn" style="width:100%;justify-content:center">Cadastrar usuário</button></div>
-          </div>
-          <p class="dim" style="margin:14px 0 0;font-size:13px">Ao cadastrar, abrirá automaticamente o e-mail para envio das credenciais ao novo usuário.</p>
-        </div>
-
-        <h2>Usuários cadastrados</h2>
-        <div class="card" style="padding:0;overflow:hidden">
-          <table class="table" style="border:0;border-radius:0;box-shadow:none">
-            <thead><tr><th>Nome</th><th>E-mail</th><th>Cadastrado em</th><th style="text-align:right">Ações</th></tr></thead>
-            <tbody id="userTable"></tbody>
-          </table>
-        </div>
-
-        <div class="highlight" style="margin-top:24px">
-          <div class="icon">!</div>
-          <div><h4>Importante sobre o armazenamento</h4><p>Por enquanto, os usuários ficam salvos no seu navegador. Para sincronização entre dispositivos e recuperação automática de senha, vamos integrar Firebase/Supabase numa próxima etapa — sem mexer no design.</p></div>
-        </div>
-      </section>
-
       <!-- ============== REMOVED: VIDEOS ============== -->
       <section class="module" id="videos_removed" style="display:none"></section>
 
@@ -2368,439 +2346,649 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
 <script>
-/* ================== AUTH + ADMIN ================== */
+/* ============================================================
+   UNIVERSIDADE SMARTER — Supabase Auth + Progress
+   feat: admin progress dashboard + user isolation (RLS)
+   ============================================================ */
 (function(){
-  const ADMIN_EMAIL = "admin@smarterestagios.com.br";
-  const ADMIN_PASS  = "789852Vi@";
-  const USERS_KEY   = "smarter-users-v1";
-  const SESSION_KEY = "smarter-session-v1";
-  const LOGINS_KEY  = "smarter-logins-v1";
+'use strict';
 
-  // simple SHA-256
-  async function sha(s){
-    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
-    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
-  }
+/* ── Supabase client ── */
+const SURL = 'https://ahkfjpwlyqgypsbpogwx.supabase.co';
+const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoa2ZqcHdseXFneXBzYnBvZ3d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTA5NzgsImV4cCI6MjA5NTMyNjk3OH0.qdhm04-RBrQfm-XRiaVzmqgMbDbzFmeH_CIcA-qKUKQ';
+const sb = supabase.createClient(SURL, SKEY);
 
-  function getUsers(){ try { return JSON.parse(localStorage.getItem(USERS_KEY)||"[]"); } catch(e){ return []; } }
-  function setUsers(arr){ localStorage.setItem(USERS_KEY, JSON.stringify(arr)); }
-  function getSession(){ try { return JSON.parse(localStorage.getItem(SESSION_KEY)||"null"); } catch(e){ return null; } }
-  function setSession(s){ if(s) localStorage.setItem(SESSION_KEY, JSON.stringify(s)); else localStorage.removeItem(SESSION_KEY); }
-  function bumpLoginCount(){
-    const k = LOGINS_KEY + "-" + new Date().toISOString().slice(0,7); // by month
-    localStorage.setItem(k, String((parseInt(localStorage.getItem(k)||"0")+1)));
-  }
-  function getLoginCountThisMonth(){
-    const k = LOGINS_KEY + "-" + new Date().toISOString().slice(0,7);
-    return parseInt(localStorage.getItem(k)||"0");
-  }
+/* ── Module metadata ── */
+const ORDER = ['home','m1','m2','m3','m4','m5','m6','m7','m8','m9','m10',
+               'm11','m12','m13','m14','m15','m16','m17','m18','m19','m20','admin'];
+const MODULE_KEYS = ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10',
+                     'm11','m12','m13','m14','m15','m16','m17','m18','m19','m20'];
+const TITLES = {
+  home:'Visão geral',
+  m1:'Boas-vindas', m2:'Quem somos', m3:'Mercado de estágios', m4:'Modelo de negócio',
+  m5:'Papel do franqueado', m6:'Captação de empresas', m7:'Scripts comerciais',
+  m8:'Vendendo o estágio', m9:'Abertura de vaga', m10:'Captação de estudantes',
+  m11:'Triagem de currículos', m12:'Atendimento', m13:'Operação do estágio',
+  m14:'Indicadores', m15:'Rotina diária', m16:'Marketing local',
+  m17:'Crescimento & escala', m18:'Erros comuns', m19:'Cultura Smarter',
+  m20:'Próximo: o sistema', admin:'Painel de usuários'
+};
+const SUBS = {
+  m1:'Mentalidade, expectativas e metas dos 30 primeiros dias.',
+  m2:'Missão, visão, valores e posicionamento da Smarter.',
+  m3:'As 4 peças do processo, oportunidade e benefícios.',
+  m4:'Como a unidade ganha e a matemática da escalabilidade.',
+  m5:'Os 3 chapéus do franqueado e os comportamentos esperados.',
+  m6:'Perfil ideal, canais e como montar lista de empresas.',
+  m7:'8 scripts prontos para WhatsApp e abordagem direta.',
+  m8:'Dores, argumentos, objeções e fechamento da vaga.',
+  m9:'Checklist completo para abrir uma vaga sem ruído.',
+  m10:'Canais, conteúdos e manutenção da base de estudantes.',
+  m11:'O filtro Smarter e a montagem da shortlist.',
+  m12:'SLAs, tom de voz e protocolo de resolução de problema.',
+  m13:'O fluxo completo, do sim da empresa ao TCE assinado.',
+  m14:'Dashboard padrão e leitura dos indicadores.',
+  m15:'Blocos de horário e metas diárias da unidade.',
+  m16:'Conteúdo, frequência e construção de autoridade local.',
+  m17:'Plano de 30/60/90 dias e quando contratar equipe.',
+  m18:'Os 8 erros que matam unidade — com quiz.',
+  m19:'Os 6 valores que sustentam a operação Smarter.',
+  m20:'Visão do sistema como centro da operação.'
+};
 
-  function initials(name){
-    if (!name) return "?";
-    const p = name.trim().split(/\s+/);
-    return ((p[0]||"")[0]||"").toUpperCase() + ((p[p.length-1]||"")[0]||"").toUpperCase();
-  }
+/* ── Global role state ── */
+window.__role = null;
+let __session = null;
+let __profile = null;
+let __doneSet = new Set();
+let __currentSection = 'home';
 
-  // ---------- Login ----------
-  const overlay = document.getElementById("authOverlay");
-  const errEl   = document.getElementById("authError");
-  function showOverlay(){ overlay.classList.add("show"); document.body.classList.remove("authed"); document.querySelector(".app").classList.remove("authed"); document.querySelector(".mobile-bar").style.display=""; }
-  function hideOverlay(){ overlay.classList.remove("show"); document.querySelector(".app").classList.add("authed"); }
-  function showError(msg){ errEl.textContent = msg; errEl.classList.add("show"); setTimeout(()=>errEl.classList.remove("show"), 3500); }
+/* ── UI helpers ── */
+const $ = id => document.getElementById(id);
+const overlay = $('authOverlay');
+const errEl   = $('authError');
 
-  async function tryLogin(email, pass){
-    email = (email||"").trim().toLowerCase();
-    if (email === ADMIN_EMAIL.toLowerCase() && pass === ADMIN_PASS){
-      return { email: ADMIN_EMAIL, name: "Administrador Smarter", role: "admin" };
-    }
-    const users = getUsers();
-    const u = users.find(x => x.email.toLowerCase() === email);
-    if (!u) return null;
-    const hash = await sha(pass);
-    if (hash !== u.passHash) return null;
-    return { email: u.email, name: u.name, role: "user" };
-  }
+function showOverlay(){
+  overlay.classList.add('show');
+  document.body.classList.remove('is-admin');
+  document.querySelector('.app').classList.remove('authed');
+  document.querySelector('.mobile-bar').style.display = '';
+}
+function hideOverlay(){
+  overlay.classList.remove('show');
+  document.querySelector('.app').classList.add('authed');
+}
+function showError(msg){
+  errEl.textContent = msg;
+  errEl.classList.add('show');
+  setTimeout(()=>errEl.classList.remove('show'), 3500);
+}
+function initials(name){
+  if(!name) return '?';
+  const p = name.trim().split(/\s+/);
+  return ((p[0]||'')[0]||'').toUpperCase() + ((p[p.length-1]||'')[0]||'').toUpperCase();
+}
+function fmtDate(iso){
+  if(!iso) return '—';
+  return new Date(iso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
 
-  async function applySession(s){
-    setSession(s);
-    document.body.classList.toggle("is-admin", s.role === "admin");
-    const pill = document.getElementById("userPill");
-    pill.style.display = "flex";
-    pill.classList.toggle("admin", s.role === "admin");
-    document.getElementById("userAvatar").textContent = initials(s.name);
-    document.getElementById("userName").textContent = s.name + (s.role==="admin" ? " · Admin" : "");
-    hideOverlay();
-    if (s.role === "admin") renderUsers();
-    refreshAdminStats();
-  }
+/* ── Auth form ── */
+$('authForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const email = $('authEmail').value.trim().toLowerCase();
+  const pass  = $('authPass').value;
+  const btn   = e.target.querySelector('button[type=submit]');
+  btn.disabled = true;
+  btn.textContent = 'Entrando…';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.disabled = false;
+  btn.textContent = 'Entrar na universidade';
+  if(error){ showError('E-mail ou senha incorretos. Verifique seus dados.'); return; }
+  $('authPass').value = '';
+});
 
-  document.getElementById("authForm").addEventListener("submit", async (e)=>{
-    e.preventDefault();
-    const email = document.getElementById("authEmail").value;
-    const pass = document.getElementById("authPass").value;
-    const session = await tryLogin(email, pass);
-    if (!session){ showError("E-mail ou senha incorretos. Verifique seus dados."); return; }
-    bumpLoginCount();
-    await applySession(session);
-    document.getElementById("authPass").value = "";
+/* ── Logout ── */
+$('logoutBtn').addEventListener('click', async ()=>{
+  await sb.auth.signOut();
+  // Clear all app localStorage keys
+  Object.keys(localStorage).forEach(k=>{
+    if(k.startsWith('smarter-')) localStorage.removeItem(k);
   });
+  window.__role = null;
+  __session = null;
+  __profile = null;
+  __doneSet = new Set();
+  showOverlay();
+});
 
-  document.getElementById("logoutBtn").addEventListener("click", ()=>{
-    setSession(null);
-    document.body.classList.remove("is-admin");
-    document.getElementById("userPill").style.display = "none";
-    showOverlay();
-  });
+/* ── Session handling ── */
+async function applySession(session){
+  __session = session;
 
-  // ---------- Admin user CRUD ----------
-  function fmtDate(iso){
-    if (!iso) return "—";
-    const d = new Date(iso);
-    return d.toLocaleDateString("pt-BR") + " · " + d.toLocaleTimeString("pt-BR", {hour:"2-digit",minute:"2-digit"});
-  }
+  // Fetch profile (is_admin flag from Supabase — never trust localStorage for role)
+  const { data: profile, error: pErr } = await sb.from('profiles')
+    .select('id, name, email, is_admin')
+    .eq('id', session.user.id)
+    .single();
 
-  function renderUsers(){
-    const tb = document.getElementById("userTable");
-    if (!tb) return;
-    const users = getUsers();
-    if (users.length === 0){
-      tb.innerHTML = `<tr class="user-row-empty"><td colspan="4">Nenhum usuário cadastrado ainda. Use o formulário acima para adicionar o primeiro.</td></tr>`;
-    } else {
-      tb.innerHTML = users.map(u=>`
-        <tr data-email="${u.email}">
-          <td><b>${u.name}</b></td>
-          <td>${u.email}</td>
-          <td class="user-table-meta">${fmtDate(u.createdAt)}</td>
-          <td>
-            <div class="user-table-actions">
-              <button class="ua-btn mail" data-act="mail">E-mail</button>
-              <button class="ua-btn" data-act="edit">Editar</button>
-              <button class="ua-btn danger" data-act="del">Excluir</button>
-            </div>
-          </td>
-        </tr>
-      `).join("");
-    }
-    document.getElementById("userCount").textContent = users.length;
-    const last = users[users.length-1];
-    document.getElementById("lastUser").textContent = last ? last.name.split(" ")[0] : "—";
-  }
-  function refreshAdminStats(){
-    const el = document.getElementById("loginCount");
-    if (el) el.textContent = getLoginCountThisMonth();
-  }
-
-  function buildMailto(name, email, pass){
-    const subject = "Seu acesso à Universidade Smarter";
-    const link = window.location.origin + window.location.pathname;
-    const body =
-`Olá ${name.split(" ")[0]},
-
-Você acaba de ser cadastrado(a) na Universidade do Franqueado Smarter Estágios.
-
-Acesse pelo link abaixo com seus dados:
-
-🔗 Link: ${link}
-📧 E-mail: ${email}
-🔑 Senha: ${pass}
-
-Após o primeiro acesso, recomendamos que você guarde essa senha em local seguro. Em caso de dúvida, entre em contato com o administrador da sua unidade.
-
-Bons estudos!
-Equipe Smarter Estágios`;
-    return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  }
-
-  async function addUser(name, email, pass){
-    name = (name||"").trim();
-    email = (email||"").trim().toLowerCase();
-    pass = (pass||"").trim();
-    if (!name || !email || !pass) return { ok:false, msg:"Preencha todos os campos." };
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok:false, msg:"E-mail inválido." };
-    if (pass.length < 6) return { ok:false, msg:"Senha deve ter pelo menos 6 caracteres." };
-    if (email === ADMIN_EMAIL.toLowerCase()) return { ok:false, msg:"Este e-mail é reservado para o administrador." };
-    const users = getUsers();
-    if (users.some(u=>u.email.toLowerCase() === email)) return { ok:false, msg:"Já existe usuário com esse e-mail." };
-    const passHash = await sha(pass);
-    users.push({ name, email, passHash, createdAt: new Date().toISOString() });
-    setUsers(users);
-    return { ok:true, name, email, pass };
-  }
-
-  document.getElementById("addUserBtn") && document.getElementById("addUserBtn").addEventListener("click", async ()=>{
-    const name = document.getElementById("newName").value;
-    const email = document.getElementById("newEmail").value;
-    const pass = document.getElementById("newPass").value;
-    const res = await addUser(name, email, pass);
-    if (!res.ok){ alert(res.msg); return; }
-    renderUsers();
-    document.getElementById("newName").value="";
-    document.getElementById("newEmail").value="";
-    document.getElementById("newPass").value="";
-    // open mail draft
-    window.location.href = buildMailto(res.name, res.email, res.pass);
-  });
-
-  document.getElementById("userTable") && document.getElementById("userTable").addEventListener("click", async (e)=>{
-    const btn = e.target.closest("[data-act]"); if (!btn) return;
-    const row = btn.closest("tr"); const email = row.dataset.email;
-    const users = getUsers();
-    const idx = users.findIndex(u=>u.email===email);
-    if (idx === -1) return;
-    const u = users[idx];
-
-    if (btn.dataset.act === "del"){
-      if (!confirm(`Excluir o acesso de ${u.name} (${u.email})?`)) return;
-      users.splice(idx,1); setUsers(users); renderUsers();
-    } else if (btn.dataset.act === "edit"){
-      const newName = prompt("Novo nome:", u.name);
-      if (newName === null) return;
-      const newEmail = prompt("Novo e-mail:", u.email);
-      if (newEmail === null) return;
-      const newPass = prompt("Nova senha (deixe em branco para manter):", "");
-      if (newPass === null) return;
-      const trimmedEmail = newEmail.trim().toLowerCase();
-      if (trimmedEmail !== u.email && users.some(x=>x.email.toLowerCase()===trimmedEmail)){
-        alert("Já existe usuário com esse e-mail."); return;
-      }
-      u.name = newName.trim() || u.name;
-      u.email = trimmedEmail || u.email;
-      if (newPass.trim().length >= 6) u.passHash = await sha(newPass.trim());
-      else if (newPass.trim().length > 0) { alert("Senha deve ter pelo menos 6 caracteres. Senha não foi alterada."); }
-      setUsers(users); renderUsers();
-    } else if (btn.dataset.act === "mail"){
-      const newPass = prompt(`Gerar e enviar credenciais novamente para ${u.name}.\n\nDigite a nova senha que será enviada (ou deixe em branco para gerar uma automática):`, "");
-      if (newPass === null) return;
-      let passToSend = newPass.trim();
-      if (!passToSend){ passToSend = Math.random().toString(36).slice(2,10) + "S!"; }
-      if (passToSend.length < 6){ alert("Senha precisa ter ao menos 6 caracteres."); return; }
-      u.passHash = await sha(passToSend);
-      setUsers(users);
-      window.location.href = buildMailto(u.name, u.email, passToSend);
-    }
-  });
-
-  // ---------- Init ----------
-  const existing = getSession();
-  if (existing){
-    applySession(existing);
+  if(pErr || !profile){
+    // Profile might not exist yet (race with trigger) — try once more
+    await new Promise(r=>setTimeout(r,800));
+    const { data: p2 } = await sb.from('profiles').select('id, name, email, is_admin').eq('id', session.user.id).single();
+    if(!p2){ await sb.auth.signOut(); showOverlay(); return; }
+    __profile = p2;
   } else {
-    showOverlay();
+    __profile = profile;
   }
 
-  // expose for the main app script
-  window.__smarterAuth = { renderUsers, refreshAdminStats };
+  // Update last_login_at
+  await sb.from('profiles').update({ last_login_at: new Date().toISOString() }).eq('id', session.user.id);
+
+  window.__role = __profile.is_admin ? 'admin' : 'user';
+
+  // Render user pill
+  const pill = $('userPill');
+  pill.style.display = 'flex';
+  pill.classList.toggle('admin', __profile.is_admin);
+  $('userAvatar').textContent = initials(__profile.name);
+  $('userName').textContent   = __profile.name + (__profile.is_admin ? ' · Admin' : '');
+
+  hideOverlay();
+
+  // Load progress from Supabase (+ migrate localStorage if needed)
+  await loadProgress();
+
+  // Admin: inject nav item + section into DOM
+  if(window.__role === 'admin'){
+    injectAdminNav();
+    injectAdminSection();
+    await loadAdminDashboard();
+  }
+
+  // Restore last section
+  const saved = localStorage.getItem('smarter-current-v2') || 'home';
+  go(saved);
+}
+
+/* ── Supabase auth state listener ── */
+sb.auth.onAuthStateChange(async (event, session)=>{
+  if(event === 'SIGNED_IN' && session){ await applySession(session); }
+  if(event === 'SIGNED_OUT'){ showOverlay(); }
+});
+
+/* ── Initial session check ── */
+(async ()=>{
+  const { data: { session } } = await sb.auth.getSession();
+  if(session){ await applySession(session); }
+  else { showOverlay(); }
 })();
-</script>
 
-<script>
-(function(){
-  // ----- module list & order -----
-  const order = ["home","m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12","m13","m14","m15","m16","m17","m18","m19","m20","admin"];
-  const moduleKeys = order.slice(1, 21); // m1..m20 only for progress
-  const titles = {
-    home:"Visão geral",
-    m1:"Boas-vindas", m2:"Quem somos", m3:"Mercado de estágios", m4:"Modelo de negócio",
-    m5:"Papel do franqueado", m6:"Captação de empresas", m7:"Scripts comerciais",
-    m8:"Vendendo o estágio", m9:"Abertura de vaga", m10:"Captação de estudantes",
-    m11:"Triagem de currículos", m12:"Atendimento", m13:"Operação do estágio",
-    m14:"Indicadores", m15:"Rotina diária", m16:"Marketing local",
-    m17:"Crescimento & escala", m18:"Erros comuns", m19:"Cultura Smarter",
-    m20:"Próximo: o sistema",
-    admin:"Painel de usuários"
-  };
-  const subs = {
-    m1:"Mentalidade, expectativas e metas dos 30 primeiros dias.",
-    m2:"Missão, visão, valores e posicionamento da Smarter.",
-    m3:"As 4 peças do processo, oportunidade e benefícios.",
-    m4:"Como a unidade ganha e a matemática da escalabilidade.",
-    m5:"Os 3 chapéus do franqueado e os comportamentos esperados.",
-    m6:"Perfil ideal, canais e como montar lista de empresas.",
-    m7:"8 scripts prontos para WhatsApp e abordagem direta.",
-    m8:"Dores, argumentos, objeções e fechamento da vaga.",
-    m9:"Checklist completo para abrir uma vaga sem ruído.",
-    m10:"Canais, conteúdos e manutenção da base de estudantes.",
-    m11:"O filtro Smarter e a montagem da shortlist.",
-    m12:"SLAs, tom de voz e protocolo de resolução de problema.",
-    m13:"O fluxo completo, do sim da empresa ao TCE assinado.",
-    m14:"Dashboard padrão e leitura dos indicadores.",
-    m15:"Blocos de horário e metas diárias da unidade.",
-    m16:"Conteúdo, frequência e construção de autoridade local.",
-    m17:"Plano de 30/60/90 dias e quando contratar equipe.",
-    m18:"Os 8 erros que matam unidade — com quiz.",
-    m19:"Os 6 valores que sustentam a operação Smarter.",
-    m20:"Visão do sistema como centro da operação."
-  };
+/* ============================================================
+   PROGRESS (Supabase user_progress)
+   ============================================================ */
+async function loadProgress(){
+  const uid = __session.user.id;
+  const { data } = await sb.from('user_progress').select('module_id').eq('user_id', uid);
+  __doneSet = new Set((data||[]).map(r=>r.module_id));
 
-  // ----- state -----
-  const STORAGE = "smarter-training-v1";
-  let state = JSON.parse(localStorage.getItem(STORAGE) || "{}");
-  if (!state.done) state.done = {};
-  if (!state.current) state.current = "home";
-  if (!state.checks) state.checks = {};
-
-  function save(){ localStorage.setItem(STORAGE, JSON.stringify(state)); }
-
-  // ----- mod cards on home -----
-  const modCards = document.getElementById("modCards");
-  moduleKeys.forEach((k,i)=>{
-    const d = document.createElement("div");
-    d.className = "mod-card";
-    d.dataset.go = k;
-    d.innerHTML = `
-      <div class="num">MÓDULO ${String(i+1).padStart(2,"0")}</div>
-      <h4>${titles[k]}</h4>
-      <p>${subs[k]||""}</p>
-      <div class="foot"><span>${state.done[k]?"Concluído":"Pendente"}</span><span class="dot"></span></div>
-    `;
-    if (state.done[k]) d.classList.add("done");
-    modCards.appendChild(d);
-  });
-
-  // ----- navigation -----
-  function go(id, push){
-    if (!order.includes(id)) id = "home";
-    document.querySelectorAll(".module").forEach(s=>s.classList.toggle("active", s.id===id));
-    document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active", n.dataset.go===id));
-    document.getElementById("crumb").textContent = titles[id]||"Visão geral";
-    let label;
-    if (id==="home") label = "Início — visão geral";
-    else if (id==="admin") label = "Administração";
-    else label = `Módulo ${moduleKeys.indexOf(id)+1} de 20`;
-    document.getElementById("ofText").textContent = label;
-    state.current = id;
-    save();
-    // close mobile sidebar
-    document.getElementById("sidebar").classList.remove("open");
-    window.scrollTo({top:0, behavior:"instant"});
+  // Migrate from old localStorage if first Supabase login and localStorage has data
+  const lsRaw = localStorage.getItem('smarter-training-v1');
+  if(lsRaw && __doneSet.size === 0){
+    try{
+      const old = JSON.parse(lsRaw);
+      const toMigrate = Object.entries(old.done||{}).filter(([,v])=>v).map(([k])=>k);
+      if(toMigrate.length > 0){
+        const rows = toMigrate.map(m=>({ user_id: uid, module_id: m }));
+        await sb.from('user_progress').upsert(rows, { onConflict: 'user_id,module_id' });
+        __doneSet = new Set(toMigrate);
+      }
+      localStorage.removeItem('smarter-training-v1');
+    } catch(e){}
   }
+  // Also migrate checks state (non-critical)
+  localStorage.removeItem('smarter-training-v1');
 
-  document.addEventListener("click", e=>{
-    const t = e.target.closest("[data-go]");
-    if (t){ go(t.dataset.go); }
-  });
-
-  document.getElementById("prevBtn").onclick = ()=>{
-    const i = order.indexOf(state.current);
-    go(order[Math.max(0,i-1)]);
-  };
-  document.getElementById("nextBtn").onclick = ()=>{
-    const i = order.indexOf(state.current);
-    if (state.current !== "home") markDone(state.current);
-    go(order[Math.min(order.length-1,i+1)]);
-  };
-
-  document.getElementById("completeBtn").onclick = ()=>{
-    if (state.current === "home") return;
-    markDone(state.current);
-    flashDone();
-  };
-
-  document.getElementById("finishBtn") && (document.getElementById("finishBtn").onclick = ()=>{
-    moduleKeys.forEach(k=>state.done[k]=true);
-    save(); refreshProgress(); refreshNav(); refreshCards();
-    flashDone(true);
-  });
-
-  document.getElementById("resetBtn").onclick = ()=>{
-    if (!confirm("Reiniciar todo o progresso?")) return;
-    state = {done:{}, current:"home", checks:{}};
-    save(); refreshProgress(); refreshNav(); refreshCards(); go("home");
-    document.querySelectorAll(".checklist li").forEach(li=>li.classList.remove("checked"));
-    document.querySelectorAll(".quiz-opt").forEach(o=>{o.classList.remove("correct","wrong")});
-    document.querySelectorAll(".quiz-feedback").forEach(f=>{f.textContent="";f.className="quiz-feedback"});
-  };
-
-  function markDone(id){
-    state.done[id] = true;
-    save(); refreshProgress(); refreshNav(); refreshCards();
-  }
-
-  function refreshProgress(){
-    const total = moduleKeys.length;
-    const done = moduleKeys.filter(k=>state.done[k]).length;
-    const pct = Math.round(done/total*100);
-    document.getElementById("progPct").textContent = pct;
-    document.getElementById("progFill").style.width = pct + "%";
-  }
-  function refreshNav(){
-    document.querySelectorAll(".nav-item").forEach(n=>{
-      const k = n.dataset.go;
-      n.classList.toggle("done", !!state.done[k]);
-    });
-  }
-  function refreshCards(){
-    document.querySelectorAll(".mod-card").forEach(c=>{
-      const k = c.dataset.go;
-      c.classList.toggle("done", !!state.done[k]);
-      const foot = c.querySelector(".foot span");
-      if (foot) foot.textContent = state.done[k] ? "Concluído" : "Pendente";
-    });
-  }
-
-  // (videos & marketing sections removed in this build)
-
-  // ----- checklists -----
-  document.querySelectorAll(".checklist").forEach(list=>{
-    const key = list.dataset.key;
-    if (!state.checks[key]) state.checks[key] = {};
-    [...list.children].forEach((li,i)=>{
-      if (state.checks[key][i]) li.classList.add("checked");
-      li.addEventListener("click", ()=>{
-        li.classList.toggle("checked");
-        state.checks[key][i] = li.classList.contains("checked");
-        save();
-      });
-    });
-  });
-
-  // ----- quizzes -----
-  document.querySelectorAll(".quiz").forEach(q=>{
-    const fb = q.querySelector(".quiz-feedback");
-    q.querySelectorAll(".quiz-opt").forEach(opt=>{
-      opt.addEventListener("click", ()=>{
-        const isRight = opt.dataset.c === "1";
-        q.querySelectorAll(".quiz-opt").forEach(o=>o.classList.remove("correct","wrong"));
-        opt.classList.add(isRight?"correct":"wrong");
-        if (isRight) q.querySelectorAll(".quiz-opt").forEach(o=>{if(o.dataset.c==="1")o.classList.add("correct")});
-        fb.textContent = isRight ? "Correto! Boa." : "Não é essa. Pense de novo.";
-        fb.className = "quiz-feedback " + (isRight?"ok":"err");
-      });
-    });
-  });
-
-  // ----- copy buttons -----
-  document.querySelectorAll(".copy-btn").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const script = btn.closest(".card").querySelector(".script");
-      const text = script.innerText.replace(/^Você\s*/i,"").trim();
-      navigator.clipboard && navigator.clipboard.writeText(text);
-      const original = btn.textContent;
-      btn.textContent = "Copiado!";
-      setTimeout(()=>btn.textContent = original, 1500);
-    });
-  });
-
-  // ----- mobile -----
-  document.getElementById("mobileToggle") && (document.getElementById("mobileToggle").onclick = ()=>{
-    document.getElementById("sidebar").classList.toggle("open");
-  });
-
-  // ----- complete feedback -----
-  function flashDone(all){
-    const b = document.getElementById("completeBtn");
-    const orig = b.textContent;
-    b.textContent = all ? "Treinamento concluído ✓" : "Marcado ✓";
-    setTimeout(()=>b.textContent = orig, 1800);
-  }
-
-  // ----- init -----
   refreshProgress();
   refreshNav();
   refreshCards();
-  go(state.current || "home");
+}
+
+async function markDone(id){
+  if(!MODULE_KEYS.includes(id)) return;
+  if(__doneSet.has(id)) return;
+  await sb.from('user_progress').upsert({ user_id: __session.user.id, module_id: id },{ onConflict: 'user_id,module_id' });
+  __doneSet.add(id);
+  refreshProgress(); refreshNav(); refreshCards();
+}
+
+async function resetProgress(){
+  if(!confirm('Reiniciar todo o progresso? Esta ação não pode ser desfeita.')) return;
+  await sb.from('user_progress').delete().eq('user_id', __session.user.id);
+  __doneSet = new Set();
+  __currentSection = 'home';
+  localStorage.removeItem('smarter-current-v2');
+  refreshProgress(); refreshNav(); refreshCards();
+  document.querySelectorAll('.checklist li').forEach(li=>li.classList.remove('checked'));
+  document.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('correct','wrong'));
+  document.querySelectorAll('.quiz-feedback').forEach(f=>{f.textContent='';f.className='quiz-feedback'});
+  go('home');
+}
+
+function refreshProgress(){
+  const total = MODULE_KEYS.length;
+  const done  = MODULE_KEYS.filter(k=>__doneSet.has(k)).length;
+  const pct   = Math.round(done/total*100);
+  $('progPct').textContent = pct;
+  $('progFill').style.width = pct + '%';
+}
+function refreshNav(){
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    const k = n.dataset.go;
+    n.classList.toggle('done', !!__doneSet.has(k));
+  });
+}
+function refreshCards(){
+  document.querySelectorAll('.mod-card').forEach(c=>{
+    const k = c.dataset.go;
+    c.classList.toggle('done', __doneSet.has(k));
+    const foot = c.querySelector('.foot span');
+    if(foot) foot.textContent = __doneSet.has(k) ? 'Concluído' : 'Pendente';
+  });
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function go(id, _push){
+  // Security: block admin access for non-admins
+  if(id === 'admin' && window.__role !== 'admin'){ id = 'home'; }
+  if(!ORDER.includes(id)) id = 'home';
+
+  __currentSection = id;
+  localStorage.setItem('smarter-current-v2', id);
+
+  document.querySelectorAll('.module').forEach(s=>s.classList.toggle('active', s.id===id));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.go===id));
+  $('crumb').textContent = TITLES[id]||'Visão geral';
+
+  let label;
+  if(id==='home')  label = 'Início — visão geral';
+  else if(id==='admin') label = 'Administração';
+  else label = `Módulo ${MODULE_KEYS.indexOf(id)+1} de 20`;
+  $('ofText').textContent = label;
+
+  document.getElementById('sidebar').classList.remove('open');
+  window.scrollTo({top:0, behavior:'instant'});
+}
+
+document.addEventListener('click', e=>{
+  const t = e.target.closest('[data-go]');
+  if(t) go(t.dataset.go);
+});
+
+$('prevBtn').onclick = ()=>{
+  const i = ORDER.indexOf(__currentSection);
+  go(ORDER[Math.max(0,i-1)]);
+};
+$('nextBtn').onclick = ()=>{
+  const i = ORDER.indexOf(__currentSection);
+  if(__currentSection !== 'home' && __currentSection !== 'admin') markDone(__currentSection);
+  go(ORDER[Math.min(ORDER.length-1,i+1)]);
+};
+$('completeBtn').onclick = ()=>{
+  if(__currentSection === 'home' || __currentSection === 'admin') return;
+  markDone(__currentSection);
+  flashDone();
+};
+$('resetBtn').onclick = ()=> resetProgress();
+
+function flashDone(all){
+  const b = $('completeBtn');
+  const orig = b.textContent;
+  b.textContent = all ? 'Treinamento concluído ✓' : 'Marcado ✓';
+  setTimeout(()=>b.textContent = orig, 1800);
+}
+
+/* ── Module cards on home ── */
+(function buildModCards(){
+  const modCards = $('modCards');
+  if(!modCards) return;
+  MODULE_KEYS.forEach((k,i)=>{
+    const d = document.createElement('div');
+    d.className = 'mod-card';
+    d.dataset.go = k;
+    d.innerHTML = `
+      <div class="num">MÓDULO ${String(i+1).padStart(2,'0')}</div>
+      <h4>${TITLES[k]}</h4>
+      <p>${SUBS[k]||''}</p>
+      <div class="foot"><span>Pendente</span><span class="dot"></span></div>
+    `;
+    modCards.appendChild(d);
+  });
 })();
+
+/* ── Checklists ── */
+const __checks = (()=>{ try{ return JSON.parse(localStorage.getItem('smarter-checks-v2')||'{}'); }catch(e){ return {}; } })();
+function saveChecks(){ localStorage.setItem('smarter-checks-v2', JSON.stringify(__checks)); }
+document.querySelectorAll('.checklist').forEach(list=>{
+  const key = list.dataset.key;
+  if(!__checks[key]) __checks[key] = {};
+  [...list.children].forEach((li,i)=>{
+    if(__checks[key][i]) li.classList.add('checked');
+    li.addEventListener('click', ()=>{
+      li.classList.toggle('checked');
+      __checks[key][i] = li.classList.contains('checked');
+      saveChecks();
+    });
+  });
+});
+
+/* ── Quizzes ── */
+document.querySelectorAll('.quiz').forEach(q=>{
+  const fb = q.querySelector('.quiz-feedback');
+  q.querySelectorAll('.quiz-opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      const isRight = opt.dataset.c === '1';
+      q.querySelectorAll('.quiz-opt').forEach(o=>o.classList.remove('correct','wrong'));
+      opt.classList.add(isRight?'correct':'wrong');
+      if(isRight) q.querySelectorAll('.quiz-opt').forEach(o=>{if(o.dataset.c==='1')o.classList.add('correct')});
+      fb.textContent = isRight ? 'Correto! Boa.' : 'Não é essa. Pense de novo.';
+      fb.className = 'quiz-feedback ' + (isRight?'ok':'err');
+    });
+  });
+});
+
+/* ── Copy buttons ── */
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const script = btn.closest('.card').querySelector('.script');
+    const text = script ? script.innerText.replace(/^Você\s*/i,'').trim() : '';
+    navigator.clipboard && navigator.clipboard.writeText(text);
+    const orig = btn.textContent;
+    btn.textContent = 'Copiado!';
+    setTimeout(()=>btn.textContent=orig, 1500);
+  });
+});
+
+/* ── Mobile sidebar ── */
+$('mobileToggle') && ($('mobileToggle').onclick = ()=>{
+  $('sidebar').classList.toggle('open');
+});
+
+/* ── Finish button ── */
+$('finishBtn') && ($('finishBtn').onclick = async ()=>{
+  const uid = __session.user.id;
+  const missing = MODULE_KEYS.filter(k=>!__doneSet.has(k));
+  if(missing.length > 0){
+    const rows = missing.map(m=>({ user_id: uid, module_id: m }));
+    await sb.from('user_progress').upsert(rows,{ onConflict:'user_id,module_id' });
+    missing.forEach(k=>__doneSet.add(k));
+  }
+  refreshProgress(); refreshNav(); refreshCards();
+  flashDone(true);
+});
+
+/* ============================================================
+   ADMIN — inject nav item (only called when role=admin)
+   ============================================================ */
+function injectAdminNav(){
+  const nav = $('nav');
+  if(!nav || nav.querySelector('[data-go="admin"]')) return;
+  const sec = document.createElement('div');
+  sec.className = 'nav-section';
+  sec.textContent = 'Administração';
+  const item = document.createElement('div');
+  item.className = 'nav-item';
+  item.dataset.go = 'admin';
+  item.innerHTML = '<div class="nav-num"><span>⚙</span></div>Painel de usuários';
+  nav.appendChild(sec);
+  nav.appendChild(item);
+}
+
+/* ============================================================
+   ADMIN — inject section (only called when role=admin)
+   ============================================================ */
+function injectAdminSection(){
+  if($('admin')) return; // already injected
+  const content = $('content');
+  const sec = document.createElement('section');
+  sec.className = 'module';
+  sec.id = 'admin';
+  sec.innerHTML = `
+    <div class="module-tag">Administração</div>
+    <h1 class="module-title">Painel de usuários</h1>
+    <p class="module-lede">Acompanhe o progresso de todos os franqueados. Cadastre novos usuários com acesso à plataforma.</p>
+
+    <div class="stat-cards" id="adminStatCards">
+      <div class="stat"><div class="label">Total de usuários</div><div class="value" id="statTotal">—</div><div class="sub">Com acesso liberado</div></div>
+      <div class="stat"><div class="label">Concluíram a trilha</div><div class="value" id="statDone">—</div><div class="sub">20/20 módulos</div></div>
+      <div class="stat"><div class="label">Em andamento</div><div class="value" id="statProgress">—</div><div class="sub">1–19 módulos feitos</div></div>
+      <div class="stat"><div class="label">Acessos hoje</div><div class="value" id="statToday">—</div><div class="sub">Logins nas últimas 24h</div></div>
+    </div>
+
+    <h2>Cadastrar novo usuário</h2>
+    <div class="card admin-form" style="margin-bottom:28px">
+      <div class="form-row">
+        <div class="form-field"><label>Nome completo</label><input type="text" id="newName" placeholder="Ex: Maria da Silva" /></div>
+        <div class="form-field"><label>E-mail</label><input type="email" id="newEmail" placeholder="maria@email.com" /></div>
+        <div class="form-field"><label>Senha temporária</label><input type="text" id="newPass" placeholder="Mínimo 8 caracteres" /></div>
+        <div class="form-field" style="display:flex;align-items:flex-end"><button class="btn gold" id="addUserBtn" style="width:100%;justify-content:center">Cadastrar usuário</button></div>
+      </div>
+      <p class="dim" style="margin:10px 0 0;font-size:13px">O usuário recebe a senha temporária por e-mail. Peça para ele trocar no primeiro acesso.</p>
+      <div id="addUserMsg" style="margin-top:8px;font-size:13.5px;font-weight:600;display:none"></div>
+    </div>
+
+    <h2>Usuários cadastrados</h2>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="table" style="border:0;border-radius:0;box-shadow:none">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Módulos</th>
+            <th>% Trilha</th>
+            <th>Último login</th>
+            <th>Status</th>
+            <th style="text-align:right">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+      </table>
+    </div>
+  `;
+  content.appendChild(sec);
+
+  // Wire up add user button
+  $('addUserBtn').addEventListener('click', handleAddUser);
+}
+
+/* ── Add user ── */
+async function handleAddUser(){
+  if(window.__role !== 'admin') return;
+  const name  = ($('newName').value||'').trim();
+  const email = ($('newEmail').value||'').trim().toLowerCase();
+  const pass  = ($('newPass').value||'').trim();
+  const msg   = $('addUserMsg');
+
+  function showMsg(text, ok){
+    msg.style.display = 'block';
+    msg.style.color = ok ? 'var(--ok)' : 'var(--danger)';
+    msg.textContent = text;
+    setTimeout(()=>{ msg.style.display='none'; }, 5000);
+  }
+
+  if(!name||!email||!pass){ showMsg('Preencha todos os campos.', false); return; }
+  if(pass.length < 8){ showMsg('Senha deve ter pelo menos 8 caracteres.', false); return; }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ showMsg('E-mail inválido.', false); return; }
+
+  $('addUserBtn').disabled = true;
+  $('addUserBtn').textContent = 'Cadastrando…';
+
+  // Create user in Supabase Auth
+  // signUp with emailRedirectTo — keeps admin session in v2 if email confirmation is required
+  const { data, error } = await sb.auth.signUp({
+    email,
+    password: pass,
+    options: { data: { name }, emailRedirectTo: window.location.origin + window.location.pathname }
+  });
+
+  $('addUserBtn').disabled = false;
+  $('addUserBtn').textContent = 'Cadastrar usuário';
+
+  if(error){
+    showMsg('Erro: ' + error.message, false);
+    return;
+  }
+
+  // If user was created but email confirmation is required, data.user exists but session is null
+  // The trigger will create the profile. For immediate panel display, insert profile manually:
+  if(data.user){
+    await sb.from('profiles').upsert({
+      id: data.user.id,
+      name,
+      email,
+      is_admin: false
+    }, { onConflict: 'id' });
+  }
+
+  // Build invite email
+  const link = window.location.origin + window.location.pathname;
+  const body = `Olá ${name.split(' ')[0]},\n\nVocê acaba de ser cadastrado(a) na Universidade do Franqueado Smarter Estágios.\n\nAcesse pelo link abaixo:\n\n🔗 ${link}\n📧 E-mail: ${email}\n🔑 Senha temporária: ${pass}\n\nPor favor, troque sua senha após o primeiro acesso.\n\nBons estudos!\nEquipe Smarter Estágios`;
+  const subject = 'Seu acesso à Universidade Smarter';
+  window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  $('newName').value = '';
+  $('newEmail').value = '';
+  $('newPass').value = '';
+
+  showMsg('Usuário cadastrado! Envie o e-mail com as credenciais.', true);
+  await loadAdminDashboard();
+}
+
+/* ============================================================
+   ADMIN DASHBOARD — load data and render
+   ============================================================ */
+async function loadAdminDashboard(){
+  if(window.__role !== 'admin') return; // defence in depth
+
+  // Load all non-admin profiles
+  const { data: users } = await sb.from('profiles')
+    .select('id, name, email, last_login_at, created_at')
+    .eq('is_admin', false);
+
+  if(!users) return;
+
+  // Load all progress records
+  const { data: allProgress } = await sb.from('user_progress').select('user_id, module_id');
+  const progressMap = {};
+  (allProgress||[]).forEach(r=>{
+    if(!progressMap[r.user_id]) progressMap[r.user_id] = new Set();
+    progressMap[r.user_id].add(r.module_id);
+  });
+
+  // Compute per-user stats
+  const usersWithStats = users.map(u=>{
+    const done = (progressMap[u.id]||new Set()).size;
+    let statusVal = done === 0 ? 2 : done === 20 ? 0 : 1; // 0=done, 1=progress, 2=not started
+    return { ...u, done, statusVal, doneSet: progressMap[u.id]||new Set() };
+  });
+
+  // Sort: done first (statusVal 0), then progress (1), then not started (2), then by last_login desc
+  usersWithStats.sort((a,b)=>{
+    if(a.statusVal !== b.statusVal) return a.statusVal - b.statusVal;
+    const la = a.last_login_at ? new Date(a.last_login_at) : new Date(0);
+    const lb = b.last_login_at ? new Date(b.last_login_at) : new Date(0);
+    return lb - la;
+  });
+
+  // Stat cards
+  const total     = usersWithStats.length;
+  const completed = usersWithStats.filter(u=>u.done===20).length;
+  const inProgress= usersWithStats.filter(u=>u.done>0&&u.done<20).length;
+  const today     = usersWithStats.filter(u=>{
+    if(!u.last_login_at) return false;
+    const d = new Date(u.last_login_at);
+    const now = new Date();
+    return d.toDateString() === now.toDateString();
+  }).length;
+
+  const setStat = (id, val) => { const el=$(id); if(el) el.textContent = val; };
+  setStat('statTotal',    total);
+  setStat('statDone',     completed);
+  setStat('statProgress', inProgress);
+  setStat('statToday',    today);
+
+  // Render table
+  const tb = $('userTable');
+  if(!tb) return;
+
+  if(usersWithStats.length === 0){
+    tb.innerHTML = `<tr><td colspan="7" style="padding:30px;text-align:center;color:var(--muted)">Nenhum usuário cadastrado ainda.</td></tr>`;
+    return;
+  }
+
+  tb.innerHTML = usersWithStats.map(u=>{
+    const pct  = Math.round(u.done/20*100);
+    const badgeClass = u.statusVal===0 ? 'green' : u.statusVal===1 ? 'blue' : 'grey';
+    const badgeLabel = u.statusVal===0 ? 'Concluído' : u.statusVal===1 ? 'Em andamento' : 'Não iniciado';
+
+    // Build module checklist HTML (for the detail row)
+    const checklistHtml = MODULE_KEYS.map((k,i)=>`
+      <div class="mc-item${u.doneSet.has(k)?' done':''}">
+        <div class="mc-icon">${u.doneSet.has(k)?'✓':''}</div>
+        <span>${String(i+1).padStart(2,'0')} ${TITLES[k]}</span>
+      </div>
+    `).join('');
+
+    return `
+      <tr data-uid="${u.id}">
+        <td><b>${escHtml(u.name)}</b></td>
+        <td style="font-size:13px;color:var(--muted)">${escHtml(u.email)}</td>
+        <td>
+          <div class="progress-mini-wrap">
+            <span style="font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap">${u.done} / 20</span>
+            <div class="progress-mini"><div class="progress-mini-fill" style="width:${pct}%"></div></div>
+          </div>
+        </td>
+        <td style="font-size:13px;font-weight:700;color:var(--ink)">${pct}%</td>
+        <td class="user-table-meta">${fmtDate(u.last_login_at)}</td>
+        <td><span class="badge ${badgeClass}">${badgeLabel}</span></td>
+        <td>
+          <div class="user-table-actions">
+            <button class="ua-btn details" data-act="details">Ver detalhes</button>
+          </div>
+        </td>
+      </tr>
+      <tr class="detail-row" data-detail-uid="${u.id}">
+        <td colspan="7" style="padding:0 20px 16px;background:var(--paper)">
+          <div class="module-checklist">${checklistHtml}</div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  // Wire detail toggle
+  tb.addEventListener('click', e=>{
+    const btn = e.target.closest('[data-act="details"]');
+    if(!btn) return;
+    const uid = btn.closest('tr').dataset.uid;
+    const detailRow = tb.querySelector(`[data-detail-uid="${uid}"]`);
+    if(detailRow){
+      detailRow.classList.toggle('open');
+      btn.textContent = detailRow.classList.contains('open') ? 'Fechar' : 'Ver detalhes';
+    }
+  });
+}
+
+function escHtml(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+})(); // end IIFE
 </script>
 </body>
 </html>
