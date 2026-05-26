@@ -2486,16 +2486,36 @@ $('authForm').addEventListener('submit', async e=>{
 
 /* ── Logout ── */
 $('logoutBtn').addEventListener('click', async ()=>{
+  __sessionApplied = false;
+
   await sb.auth.signOut();
-  // Clear all app localStorage keys
+
+  // Clear app keys AND Supabase session keys from localStorage
   Object.keys(localStorage).forEach(k=>{
-    if(k.startsWith('smarter-')) localStorage.removeItem(k);
+    if(k.startsWith('smarter-') || k.startsWith('sb-')) localStorage.removeItem(k);
   });
+
+  // Reset state
   window.__role = null;
   __session = null;
   __profile = null;
   __doneSet = new Set();
-  showOverlay();
+
+  // Remove injected admin DOM elements so they're cleanly re-injected on next admin login
+  const adminNavItem = document.querySelector('[data-go="admin"]');
+  if(adminNavItem){
+    const prevSibling = adminNavItem.previousElementSibling;
+    if(prevSibling && prevSibling.classList.contains('nav-section')) prevSibling.remove();
+    adminNavItem.remove();
+  }
+  const adminSec = document.getElementById('admin');
+  if(adminSec) adminSec.remove();
+
+  // Hide user pill
+  const pill = $('userPill');
+  if(pill) pill.style.display = 'none';
+
+  // showOverlay() is handled by onAuthStateChange SIGNED_OUT event above
 });
 
 /* ── Session handling ── */
@@ -2552,18 +2572,40 @@ async function applySession(session){
   go(saved);
 }
 
-/* ── Supabase auth state listener ── */
-sb.auth.onAuthStateChange(async (event, session)=>{
-  if(event === 'SIGNED_IN' && session){ await applySession(session); }
-  if(event === 'SIGNED_OUT'){ showOverlay(); }
-});
+/* ── Supabase auth state listener ──────────────────────────────────────
+   Handles ALL auth events in one place.
+   INITIAL_SESSION : fired on page load (replaces manual getSession IIFE)
+   SIGNED_IN       : fired after signInWithPassword / signUp
+   TOKEN_REFRESHED : fired every ~1h — only update __session, do NOT re-render
+   SIGNED_OUT      : fired after signOut()
+───────────────────────────────────────────────────────────────────── */
+let __sessionApplied = false; // guard: only run full applySession once per login
 
-/* ── Initial session check ── */
-(async ()=>{
-  const { data: { session } } = await sb.auth.getSession();
-  if(session){ await applySession(session); }
-  else { showOverlay(); }
-})();
+sb.auth.onAuthStateChange(async (event, session)=>{
+  if(event === 'SIGNED_OUT'){
+    __sessionApplied = false;
+    showOverlay();
+    return;
+  }
+
+  if(event === 'TOKEN_REFRESHED' && session){
+    // Just keep __session fresh — no UI re-render needed
+    __session = session;
+    return;
+  }
+
+  if((event === 'INITIAL_SESSION' || event === 'SIGNED_IN') && session){
+    if(__sessionApplied) return; // already ran for this login
+    __sessionApplied = true;
+    await applySession(session);
+    return;
+  }
+
+  // INITIAL_SESSION with no session → show login
+  if(event === 'INITIAL_SESSION' && !session){
+    showOverlay();
+  }
+});
 
 /* ============================================================
    PROGRESS (Supabase user_progress)
