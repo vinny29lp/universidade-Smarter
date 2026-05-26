@@ -1,0 +1,7 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/Universidade Smarter.html" },
+    { "source": "/universidade", "destination": "/Universidade Smarter.html" }
+  ]
+}

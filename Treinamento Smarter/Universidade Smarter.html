@@ -1,0 +1,2806 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Universidade do Franqueado — Treinamento Smarter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0B1E3F;          /* azul institucional profundo */
+    --ink-2:#13315C;
+    --ink-3:#1E4173;
+    --gold:#F5B800;
+    --gold-2:#E5A823;
+    --gold-soft:#FFF4D1;
+    --paper:#F6F8FC;
+    --paper-2:#EEF2F8;
+    --line:#DBE2EE;
+    --text:#1A2433;
+    --muted:#5A6478;
+    --muted-2:#8893A6;
+    --white:#FFFFFF;
+    --ok:#1F9D55;
+    --warn:#D97706;
+    --danger:#C53030;
+    --shadow-sm: 0 1px 2px rgba(11,30,63,.06), 0 1px 1px rgba(11,30,63,.04);
+    --shadow-md: 0 10px 30px -10px rgba(11,30,63,.18), 0 2px 6px rgba(11,30,63,.06);
+    --shadow-lg: 0 24px 60px -20px rgba(11,30,63,.25);
+    --r-sm:8px; --r-md:14px; --r-lg:20px; --r-xl:28px;
+    --sidebar:300px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--text);font-family:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55}
+  a{color:inherit}
+  button{font-family:inherit}
+  ::selection{background:var(--gold);color:var(--ink)}
+
+  /* ---------- Layout ---------- */
+  .app{display:grid;grid-template-columns:var(--sidebar) 1fr;min-height:100vh}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    background:var(--ink);color:#cdd6e6;
+    position:sticky;top:0;height:100vh;overflow:hidden;
+    display:flex;flex-direction:column;
+    box-shadow: inset -1px 0 0 rgba(255,255,255,.04);
+  }
+  .brand{padding:24px 22px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .brand-logo{height:48px;width:auto;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.25))}
+  .brand-sub{font-weight:500;color:#8fa1c2;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase}
+  .brand-mark-mobile{height:30px;width:auto;display:block}
+
+  .progress-block{padding:18px 22px 14px}
+  .progress-label{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:#9fb0cf;margin-bottom:8px}
+  .progress-label b{color:#fff;font-weight:700;letter-spacing:0;text-transform:none;font-size:12px}
+  .progress-bar{height:6px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-2));width:0%;transition:width .4s ease}
+
+  .nav-scroll{flex:1;overflow-y:auto;padding:6px 12px 24px;scrollbar-width:thin;scrollbar-color:#22406b transparent}
+  .nav-scroll::-webkit-scrollbar{width:6px}
+  .nav-scroll::-webkit-scrollbar-thumb{background:#22406b;border-radius:99px}
+  .nav-section{padding:14px 10px 6px;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:#7a8cab;font-weight:700}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 10px;margin:2px 0;border-radius:10px;
+    color:#c2cee2;font-size:13.5px;font-weight:500;cursor:pointer;
+    transition:background .15s ease,color .15s ease,transform .05s ease;
+    position:relative;
+  }
+  .nav-item:hover{background:rgba(255,255,255,.04);color:#fff}
+  .nav-item.active{background:rgba(245,184,0,.12);color:#fff}
+  .nav-item.active::before{
+    content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:3px;
+    background:var(--gold);border-radius:0 3px 3px 0;
+  }
+  .nav-num{
+    width:24px;height:24px;border-radius:7px;background:rgba(255,255,255,.06);
+    display:grid;place-items:center;font-family:"JetBrains Mono",monospace;
+    font-size:11px;font-weight:600;color:#9fb0cf;flex:none;
+  }
+  .nav-item.active .nav-num{background:var(--gold);color:var(--ink)}
+  .nav-item.done .nav-num{background:rgba(31,157,85,.18);color:#7ee0a6}
+  .nav-item.done .nav-num::before{content:"✓"}
+  .nav-item.done .nav-num span{display:none}
+
+  /* ---------- Main ---------- */
+  .main{min-width:0}
+  .topbar{
+    position:sticky;top:0;z-index:10;background:rgba(246,248,252,.85);
+    backdrop-filter:saturate(180%) blur(10px);
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 36px;
+  }
+  .crumbs{font-size:12px;color:var(--muted);letter-spacing:.4px}
+  .crumbs b{color:var(--text);font-weight:600}
+  .topbar-actions{display:flex;align-items:center;gap:10px}
+  .btn{
+    border:0;background:var(--ink);color:#fff;font-weight:600;font-size:13.5px;
+    padding:10px 18px;border-radius:10px;cursor:pointer;letter-spacing:.2px;
+    display:inline-flex;align-items:center;gap:8px;transition:transform .08s ease, box-shadow .15s ease, background .15s ease;
+    box-shadow:var(--shadow-sm);
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:var(--shadow-md)}
+  .btn.gold{background:var(--gold);color:var(--ink)}
+  .btn.gold:hover{background:var(--gold-2)}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+  .btn.ghost:hover{background:#fff;border-color:#c4cfe1}
+  .btn.sm{padding:7px 12px;font-size:12.5px;border-radius:8px}
+
+  .content{padding:36px 56px 96px;max-width:1180px}
+  .module-tag{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:1.2px;
+    text-transform:uppercase;color:var(--gold-2);font-weight:600;
+    padding:6px 10px;background:var(--gold-soft);border-radius:99px;
+  }
+  h1.module-title{font-size:42px;font-weight:800;letter-spacing:-.02em;line-height:1.1;margin:16px 0 12px;color:var(--ink);text-wrap:balance}
+  .module-lede{font-size:17px;color:var(--muted);max-width:760px;line-height:1.6}
+
+  h2{font-size:24px;font-weight:700;letter-spacing:-.01em;color:var(--ink);margin:42px 0 14px}
+  h3{font-size:17px;font-weight:700;color:var(--ink);margin:24px 0 10px}
+  p{margin:10px 0;color:var(--text)}
+  p.dim{color:var(--muted)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:6px 0}
+  strong{color:var(--ink);font-weight:700}
+
+  /* Cards & boxes */
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:var(--r-md);
+    padding:22px 24px;box-shadow:var(--shadow-sm);
+  }
+  .grid{display:grid;gap:16px}
+  .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+  .stat{
+    background:#fff;border:1px solid var(--line);border-radius:var(--r-md);
+    padding:18px 20px;box-shadow:var(--shadow-sm);
+  }
+  .stat .label{font-size:12px;letter-spacing:.4px;color:var(--muted);font-weight:600;text-transform:uppercase}
+  .stat .value{font-size:30px;font-weight:800;color:var(--ink);margin-top:6px;letter-spacing:-.02em;font-feature-settings:"tnum"}
+  .stat .sub{font-size:12.5px;color:var(--muted);margin-top:4px}
+
+  .highlight{
+    background:linear-gradient(135deg,#FFFBEB 0%,#FFF4D1 100%);
+    border:1px solid #F2D67A;border-radius:var(--r-md);
+    padding:20px 22px;display:flex;gap:14px;align-items:flex-start;
+  }
+  .highlight .icon{
+    width:32px;height:32px;border-radius:9px;background:var(--gold);color:var(--ink);
+    display:grid;place-items:center;font-weight:800;flex:none;font-size:14px;
+  }
+  .highlight h4{margin:0 0 6px;color:var(--ink);font-size:15px;font-weight:700}
+  .highlight p{margin:0;color:#4a3d12;font-size:14px}
+
+  .callout{
+    background:#fff;border-left:3px solid var(--ink);border-radius:0 var(--r-md) var(--r-md) 0;
+    padding:14px 18px;color:var(--muted);font-style:italic;font-size:15px;
+  }
+
+  /* Checklists */
+  .checklist{list-style:none;padding:0;margin:14px 0}
+  .checklist li{
+    display:flex;align-items:flex-start;gap:12px;
+    padding:12px 14px;border:1px solid var(--line);border-radius:10px;
+    margin:8px 0;background:#fff;cursor:pointer;transition:all .12s ease;
+  }
+  .checklist li:hover{border-color:#c4cfe1}
+  .checklist .box{
+    width:22px;height:22px;border-radius:6px;border:1.5px solid #c4cfe1;background:#fff;
+    flex:none;margin-top:1px;display:grid;place-items:center;color:transparent;
+    font-size:13px;font-weight:800;transition:all .12s ease;
+  }
+  .checklist li.checked{background:#F4FBF7;border-color:#bfe6cf}
+  .checklist li.checked .box{background:var(--ok);border-color:var(--ok);color:#fff}
+  .checklist li.checked .txt{color:var(--muted);text-decoration:line-through}
+  .checklist .txt{font-size:14.5px;color:var(--text)}
+
+  /* Scripts */
+  .script{
+    background:#0B1E3F;color:#dfe6f3;border-radius:var(--r-md);
+    padding:22px 24px;font-size:14.5px;line-height:1.65;position:relative;
+    border:1px solid #1a3360;
+  }
+  .script .role{font-family:"JetBrains Mono",monospace;color:var(--gold);font-size:11px;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:6px;display:block}
+  .script p{color:#dfe6f3;margin:6px 0}
+  .script .hl{color:#fff;background:rgba(245,184,0,.18);padding:1px 6px;border-radius:4px}
+  .script-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .script-title h4{margin:0;color:var(--ink);font-size:15px}
+  .copy-btn{background:transparent;border:1px solid var(--line);color:var(--muted);font-size:11.5px;padding:5px 10px;border-radius:6px;cursor:pointer;font-weight:600;letter-spacing:.4px}
+  .copy-btn:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  /* Table */
+  .table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;font-size:14px;box-shadow:var(--shadow-sm)}
+  .table th,.table td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--line)}
+  .table th{background:var(--paper-2);font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .table tr:last-child td{border-bottom:0}
+  .table td b{color:var(--ink)}
+  .table .num{font-family:"JetBrains Mono",monospace;font-weight:600;color:var(--ink);font-feature-settings:"tnum"}
+
+  /* Timeline / flow */
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:18px 0}
+  .flow-step{
+    background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;position:relative;
+  }
+  .flow-step .n{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--gold-2);font-weight:700;letter-spacing:1px}
+  .flow-step h5{margin:4px 0 4px;font-size:14px;color:var(--ink)}
+  .flow-step p{margin:0;font-size:13px;color:var(--muted)}
+
+  /* Routine */
+  .routine{display:grid;grid-template-columns:140px 1fr;gap:14px;margin:10px 0;align-items:start}
+  .routine .hour{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink);font-weight:700;background:var(--paper-2);padding:8px 12px;border-radius:8px;text-align:center}
+  .routine .block{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+  .routine .block h5{margin:0 0 4px;font-size:14.5px;color:var(--ink)}
+  .routine .block p{margin:0;font-size:13.5px;color:var(--muted)}
+
+  /* Quiz */
+  .quiz{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:28px 30px;box-shadow:var(--shadow-md)}
+  .quiz-q{font-size:16.5px;font-weight:600;color:var(--ink);margin-bottom:14px}
+  .quiz-opt{
+    display:block;padding:12px 16px;border:1.5px solid var(--line);border-radius:10px;
+    margin:8px 0;cursor:pointer;font-size:14.5px;transition:all .12s ease;background:#fff;color:var(--text);
+  }
+  .quiz-opt:hover{border-color:var(--ink-3);background:var(--paper)}
+  .quiz-opt.correct{border-color:var(--ok);background:#F4FBF7;color:#155632}
+  .quiz-opt.wrong{border-color:var(--danger);background:#FEF2F2;color:#7a1f1f}
+  .quiz-feedback{margin-top:14px;font-size:14px;color:var(--muted);min-height:22px}
+  .quiz-feedback.ok{color:var(--ok)}
+  .quiz-feedback.err{color:var(--danger)}
+
+  /* Footer nav */
+  .nav-foot{
+    margin-top:60px;border-top:1px solid var(--line);padding-top:24px;
+    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  .nav-foot .meta{font-size:13px;color:var(--muted)}
+
+  /* Module landing (home) */
+  .hero{
+    background:linear-gradient(135deg,var(--ink) 0%, var(--ink-2) 70%, var(--ink-3) 100%);
+    color:#fff;border-radius:var(--r-xl);padding:44px 48px;
+    position:relative;overflow:hidden;margin-bottom:32px;
+    box-shadow:var(--shadow-lg);
+  }
+  .hero::after{
+    content:"";position:absolute;right:-80px;top:-80px;width:340px;height:340px;
+    background:radial-gradient(circle,rgba(245,184,0,.35) 0%,transparent 65%);
+    pointer-events:none;
+  }
+  .hero::before{
+    content:"";position:absolute;left:-60px;bottom:-120px;width:300px;height:300px;
+    background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 60%);
+    pointer-events:none;
+  }
+  .hero .eyebrow{font-family:"JetBrains Mono",monospace;font-size:11.5px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:600}
+  .hero h1{font-size:48px;font-weight:800;letter-spacing:-.025em;margin:14px 0 14px;line-height:1.05;max-width:720px;text-wrap:balance}
+  .hero p{font-size:17px;color:#cdd6e6;max-width:640px;line-height:1.6;margin:0}
+  .hero .row{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+  .hero .pill{font-size:12.5px;color:#cdd6e6;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:7px 12px;border-radius:99px}
+
+  .mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:14px}
+  .mod-card{
+    background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:20px 22px;
+    cursor:pointer;transition:all .15s ease;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;
+  }
+  .mod-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:#c4cfe1}
+  .mod-card .num{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--gold-2);font-weight:700;letter-spacing:1.4px}
+  .mod-card h4{margin:6px 0 8px;font-size:16.5px;color:var(--ink);line-height:1.25;font-weight:700}
+  .mod-card p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.5}
+  .mod-card .foot{margin-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+  .mod-card .dot{width:8px;height:8px;border-radius:99px;background:#d4dbe7}
+  .mod-card.done .dot{background:var(--ok)}
+  .mod-card.done .num{color:var(--ok)}
+
+  /* Tag chip */
+  .chip{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.4px;padding:3px 9px;border-radius:99px;background:var(--paper-2);color:var(--muted);margin-right:6px}
+  .chip.gold{background:var(--gold-soft);color:#7a5a0a}
+  .chip.ink{background:#E6EDF8;color:var(--ink-2)}
+  .chip.ok{background:#E4F5EC;color:#1d6b40}
+
+  /* KPI dashboard */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden}
+  .kpi .label{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.2px}
+  .kpi .v{font-size:26px;font-weight:800;color:var(--ink);font-family:"JetBrains Mono",monospace;margin-top:2px;font-feature-settings:"tnum"}
+  .kpi .target{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .kpi .bar{height:4px;background:var(--paper-2);border-radius:99px;margin-top:10px;overflow:hidden}
+  .kpi .bar i{display:block;height:100%;background:var(--gold);border-radius:99px}
+
+  /* Module sections only show one at a time */
+  .module{display:none}
+  .module.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* Mobile */
+  .mobile-bar{display:none}
+  @media (max-width: 960px){
+    .app{grid-template-columns:1fr}
+    .sidebar{position:fixed;left:-100%;top:0;width:280px;z-index:30;transition:left .25s ease}
+    .sidebar.open{left:0;box-shadow:var(--shadow-lg)}
+    .mobile-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--ink);color:#fff;position:sticky;top:0;z-index:20}
+    .mobile-bar .brand-mark-mobile{height:26px}
+    .mobile-bar button{background:rgba(255,255,255,.1);color:#fff;border:0;padding:8px 12px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer}
+    .topbar{padding:12px 18px}
+    .content{padding:24px 22px 80px}
+    .hero{padding:30px 24px}
+    .hero h1{font-size:32px}
+    h1.module-title{font-size:30px}
+    .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+    .routine{grid-template-columns:1fr}
+    .dialog{grid-template-columns:1fr !important}
+    .video-grid{grid-template-columns:1fr !important}
+  }
+
+  /* ========== Dialogue (Vendendo o Estágio) ========== */
+  .dialog-wrap{margin:18px 0 8px;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:24px 26px;box-shadow:var(--shadow-sm)}
+  .dialog-stage{display:flex;align-items:center;gap:10px;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold-2);font-weight:700;margin:18px 0 8px;padding-top:14px;border-top:1px dashed var(--line)}
+  .dialog-stage:first-child{border-top:0;padding-top:0;margin-top:0}
+  .dialog-stage .n{background:var(--gold);color:var(--ink);padding:3px 8px;border-radius:6px;font-size:10.5px;letter-spacing:1px}
+  .turn{display:grid;grid-template-columns:64px 1fr;gap:12px;margin:10px 0;align-items:flex-start}
+  .turn .who{
+    width:48px;height:48px;border-radius:99px;display:grid;place-items:center;
+    font-weight:800;font-size:14px;letter-spacing:.5px;color:#fff;flex:none;
+    font-family:"Plus Jakarta Sans",sans-serif;
+  }
+  .turn.s .who{background:var(--ink);color:#fff}
+  .turn.e .who{background:var(--gold);color:var(--ink)}
+  .turn .bubble{
+    background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 16px;
+    position:relative;font-size:14.5px;color:var(--text);line-height:1.6;
+  }
+  .turn.s .bubble{background:#F1F5FB;border-color:#dde6f2}
+  .turn.e .bubble{background:#FFFBEB;border-color:#F2D67A}
+  .turn .speaker{font-size:11.5px;letter-spacing:.4px;font-weight:700;color:var(--muted);margin-bottom:4px;text-transform:uppercase}
+  .turn.s .speaker{color:var(--ink-2)}
+  .turn.e .speaker{color:#8a6700}
+  .turn .bubble p{margin:4px 0;color:var(--text);font-size:14.5px}
+  .turn .tech{
+    display:inline-block;background:var(--ink);color:#fff;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;
+    padding:2px 8px;border-radius:99px;margin-right:6px;font-weight:700;font-family:"JetBrains Mono",monospace;
+  }
+  .turn .tech.gold{background:var(--gold);color:var(--ink)}
+  .turn .annot{margin-top:6px;font-size:12.5px;color:var(--muted);font-style:italic;border-left:2px solid var(--gold);padding-left:10px;line-height:1.5}
+
+  /* ========== Framework / technique cards ========== */
+  .tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0}
+  .tech-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden}
+  .tech-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold)}
+  .tech-card .key{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--gold-2);font-weight:700;letter-spacing:1px}
+  .tech-card h5{margin:4px 0 6px;font-size:14.5px;color:var(--ink);font-weight:700}
+  .tech-card p{margin:0;font-size:13px;color:var(--muted);line-height:1.55}
+
+  /* ========== Script full conversations ========== */
+  .script.full p{color:#dfe6f3;margin:8px 0}
+  .script .step{
+    display:inline-block;background:rgba(245,184,0,.16);color:var(--gold);
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;
+    padding:3px 8px;border-radius:6px;margin:14px 0 6px;font-weight:700;
+  }
+  .script .step:first-child{margin-top:0}
+  .script .lead{color:#8aa3cf;font-size:12.5px;font-family:"JetBrains Mono",monospace;margin:8px 0 2px;letter-spacing:.3px}
+
+  /* ========== Videos ========== */
+  .video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-top:18px}
+  .video-card{
+    background:#fff;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;
+    box-shadow:var(--shadow-sm);transition:all .15s ease;cursor:pointer;display:flex;flex-direction:column;
+  }
+  .video-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:#c4cfe1}
+  .video-thumb{
+    aspect-ratio:16/9;background:linear-gradient(135deg,var(--ink) 0%,var(--ink-2) 60%,var(--ink-3) 100%);
+    position:relative;display:grid;place-items:center;color:#fff;overflow:hidden;
+  }
+  .video-thumb::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse at top right, rgba(245,184,0,.25), transparent 50%),
+      repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 10px,transparent 10px 20px);
+  }
+  .video-play{
+    width:64px;height:64px;border-radius:99px;background:var(--gold);color:var(--ink);
+    display:grid;place-items:center;font-size:24px;font-weight:800;z-index:2;position:relative;
+    box-shadow:0 12px 32px -8px rgba(245,184,0,.6);transition:transform .2s ease;
+  }
+  .video-card:hover .video-play{transform:scale(1.08)}
+  .video-play::after{content:"";display:block;width:0;height:0;border-left:14px solid var(--ink);border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:4px}
+  .video-meta{
+    position:absolute;bottom:10px;left:12px;right:12px;display:flex;justify-content:space-between;z-index:2;
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.6px;color:#cdd6e6;
+  }
+  .video-meta .dur{background:rgba(0,0,0,.45);padding:3px 8px;border-radius:6px}
+  .video-meta .num{background:var(--gold);color:var(--ink);padding:3px 8px;border-radius:6px;font-weight:700}
+  .video-body{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+  .video-body h4{margin:0 0 6px;font-size:15.5px;color:var(--ink);font-weight:700;line-height:1.3}
+  .video-body p{margin:0;font-size:13px;color:var(--muted);line-height:1.5;flex:1}
+  .video-tags{margin-top:12px;display:flex;gap:6px;flex-wrap:wrap}
+
+  /* Video modal */
+  .modal{
+    position:fixed;inset:0;background:rgba(7,17,38,.78);backdrop-filter:blur(6px);
+    display:none;align-items:center;justify-content:center;z-index:100;padding:24px;
+  }
+  .modal.open{display:flex;animation:fade .2s ease}
+  .modal-box{
+    background:var(--ink);border-radius:var(--r-lg);max-width:900px;width:100%;overflow:hidden;
+    box-shadow:0 40px 80px -20px rgba(0,0,0,.6);
+  }
+  .modal-video{aspect-ratio:16/9;background:#000;display:grid;place-items:center;color:#cdd6e6;text-align:center;padding:20px}
+  .modal-video .placeholder-mark{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:2px;color:var(--gold);margin-bottom:10px}
+  .modal-video h3{margin:0 0 6px;color:#fff;font-size:22px;font-weight:700}
+  .modal-video p{margin:0;font-size:13px;color:#9fb0cf;max-width:480px}
+  .modal-close{
+    position:absolute;top:24px;right:24px;width:42px;height:42px;border-radius:99px;
+    background:rgba(255,255,255,.1);border:0;color:#fff;font-size:22px;cursor:pointer;
+  }
+  .modal-close:hover{background:rgba(255,255,255,.2)}
+
+  /* ========== Marketing / brand kit ========== */
+  .mkt-hero{
+    background:linear-gradient(135deg,var(--ink) 0%, #0a1a36 100%);
+    color:#fff;border-radius:var(--r-xl);padding:36px 42px;margin-bottom:28px;position:relative;overflow:hidden;
+  }
+  .mkt-hero::after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;background:radial-gradient(circle,rgba(245,184,0,.28),transparent 65%);pointer-events:none}
+  .mkt-hero h2{color:#fff;margin:0 0 8px;font-size:28px}
+  .mkt-hero p{color:#cdd6e6;margin:0;max-width:560px;font-size:15px}
+
+  .mkt-cat{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold-2);font-weight:700;margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+  .mkt-cat::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .asset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+  .asset{
+    background:#fff;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;
+    box-shadow:var(--shadow-sm);transition:all .15s ease;
+  }
+  .asset:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+  .asset-preview{
+    aspect-ratio:4/3;display:grid;place-items:center;padding:18px;
+    background:repeating-linear-gradient(45deg,#F6F8FC 0 12px,#EEF2F8 12px 24px);
+    border-bottom:1px solid var(--line);position:relative;overflow:hidden;
+  }
+  .asset-preview.dark{background:var(--ink);background-image:repeating-linear-gradient(45deg,#0e2247 0 12px,#0B1E3F 12px 24px)}
+  .asset-preview.gold{background:linear-gradient(135deg,#FFFBEB,#FFE49B)}
+  .asset-preview img{max-width:78%;max-height:78%;object-fit:contain}
+  .asset-preview .ph{
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:1.2px;
+    text-align:center;color:var(--muted);text-transform:uppercase;line-height:1.5;
+  }
+  .asset-preview.dark .ph{color:#7a8cab}
+  .asset-body{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .asset-body .name{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.3}
+  .asset-body .name small{display:block;font-weight:500;color:var(--muted);font-size:11.5px;margin-top:2px;font-family:"JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.6px}
+  .asset-dl{
+    background:var(--paper-2);border:0;color:var(--ink);font-weight:600;font-size:11.5px;
+    padding:7px 11px;border-radius:8px;cursor:pointer;letter-spacing:.4px;flex:none;
+  }
+  .asset-dl:hover{background:var(--ink);color:#fff}
+
+  /* Color tokens */
+  .swatch-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:14px 0}
+  .swatch{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .swatch .chip-color{height:80px}
+  .swatch .meta{padding:10px 14px}
+  .swatch .meta b{font-size:13.5px;color:var(--ink);display:block}
+  .swatch .meta span{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--muted)}
+
+  /* Mockups - uniforms & office */
+  .mock{
+    background:#fff;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;
+    transition:all .15s ease;
+  }
+  .mock:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+  .mock-img{
+    aspect-ratio:1/1;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,#EEF2F8,#F6F8FC);display:grid;place-items:center;
+  }
+  .mock-img.dark{background:linear-gradient(135deg,var(--ink) 0%,var(--ink-2) 100%)}
+  .mock-img .label{
+    position:absolute;top:14px;left:14px;font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:1.4px;color:var(--muted);text-transform:uppercase;
+    background:rgba(255,255,255,.9);padding:4px 8px;border-radius:6px;
+  }
+  .mock-img.dark .label{background:rgba(255,255,255,.1);color:#cdd6e6}
+  .mock-body{padding:14px 18px}
+  .mock-body h5{margin:0 0 4px;font-size:14.5px;color:var(--ink)}
+  .mock-body p{margin:0;font-size:12.5px;color:var(--muted)}
+
+  /* Type sample */
+  .type-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 24px}
+  .type-card .label{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-weight:700}
+  .type-card .sample{margin-top:6px;color:var(--ink);font-weight:800;letter-spacing:-.02em;line-height:1}
+
+  /* Watch progress on video card */
+  .video-card.watched{position:relative}
+  .video-card.watched::after{
+    content:"VISTO";position:absolute;top:12px;right:12px;background:var(--ok);color:#fff;
+    font-size:10px;font-weight:800;letter-spacing:1px;padding:4px 8px;border-radius:6px;z-index:3;
+  }
+
+  /* ========== Login overlay ========== */
+  .auth-overlay{
+    position:fixed;inset:0;z-index:1000;display:none;
+    background:linear-gradient(135deg,#0B1E3F 0%, #13315C 60%, #1E4173 100%);
+    align-items:center;justify-content:center;padding:24px;
+  }
+  .auth-overlay.show{display:flex;animation:fade .25s ease}
+  .auth-overlay::before{
+    content:"";position:absolute;right:-100px;top:-100px;width:520px;height:520px;
+    background:radial-gradient(circle,rgba(245,184,0,.22),transparent 65%);pointer-events:none;
+  }
+  .auth-overlay::after{
+    content:"";position:absolute;left:-80px;bottom:-160px;width:480px;height:480px;
+    background:radial-gradient(circle,rgba(255,255,255,.06),transparent 60%);pointer-events:none;
+  }
+  .auth-card{
+    background:#fff;border-radius:20px;padding:44px 44px 38px;max-width:440px;width:100%;
+    box-shadow:0 40px 80px -20px rgba(0,0,0,.45);position:relative;z-index:1;
+  }
+  .auth-logo{
+    background:var(--ink);margin:-44px -44px 28px;padding:34px 44px 26px;
+    border-radius:20px 20px 0 0;text-align:center;
+  }
+  .auth-logo img{height:54px;width:auto}
+  .auth-logo .sub{margin-top:14px;font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:#9fb0cf;font-weight:600}
+  .auth-card h2{margin:0 0 6px;color:var(--ink);font-size:24px;letter-spacing:-.01em}
+  .auth-card .hint{color:var(--muted);font-size:14px;margin:0 0 24px;line-height:1.5}
+  .auth-field{margin-bottom:14px}
+  .auth-field label{display:block;font-size:12px;font-weight:700;color:var(--ink);letter-spacing:.4px;text-transform:uppercase;margin-bottom:6px}
+  .auth-field input{
+    width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:10px;
+    font-family:inherit;font-size:14.5px;color:var(--ink);background:#fff;transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .auth-field input:focus{outline:none;border-color:var(--ink-3);box-shadow:0 0 0 3px rgba(30,65,115,.12)}
+  .auth-error{
+    color:var(--danger);font-size:13px;background:#FEF2F2;border:1px solid #FECACA;
+    padding:10px 12px;border-radius:8px;margin-bottom:14px;display:none;
+  }
+  .auth-error.show{display:block;animation:fade .2s ease}
+  .auth-submit{
+    width:100%;background:var(--gold);color:var(--ink);font-weight:700;font-size:15px;
+    padding:14px;border:0;border-radius:10px;cursor:pointer;letter-spacing:.2px;
+    transition:transform .08s ease, background .15s ease;margin-top:6px;
+  }
+  .auth-submit:hover{background:var(--gold-2);transform:translateY(-1px)}
+  .auth-footer{margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted);padding-top:18px;border-top:1px solid var(--line)}
+  .auth-footer b{color:var(--ink)}
+
+  /* App hidden until authed */
+  .app{display:none}
+  .app.authed{display:grid}
+
+  /* Admin-only visibility */
+  .nav-admin-only, .admin-only{display:none}
+  body.is-admin .nav-admin-only{display:block}
+  body.is-admin .admin-only{display:none}
+  body.is-admin .admin-only.active{display:block}
+
+  /* User profile / logout in topbar */
+  .user-pill{
+    display:flex;align-items:center;gap:10px;padding:6px 10px 6px 6px;
+    background:var(--paper-2);border-radius:99px;font-size:13px;color:var(--ink);font-weight:600;
+  }
+  .user-pill .avatar{
+    width:28px;height:28px;border-radius:99px;background:var(--ink);color:#fff;
+    display:grid;place-items:center;font-size:12px;font-weight:700;
+  }
+  .user-pill.admin .avatar{background:var(--gold);color:var(--ink)}
+  .user-pill .name{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  /* Admin form */
+  .admin-form .form-row{display:grid;grid-template-columns:1.4fr 1.6fr 1fr 1fr;gap:12px}
+  @media (max-width: 960px){
+    .admin-form .form-row{grid-template-columns:1fr}
+  }
+  .form-field label{display:block;font-size:11.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+  .form-field input{
+    width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;
+    font-family:inherit;font-size:14px;color:var(--ink);background:#fff;
+  }
+  .form-field input:focus{outline:none;border-color:var(--ink-3);box-shadow:0 0 0 3px rgba(30,65,115,.12)}
+
+  .user-table-actions{display:flex;gap:6px;justify-content:flex-end}
+  .ua-btn{
+    background:var(--paper-2);border:0;color:var(--ink);font-size:11.5px;font-weight:700;letter-spacing:.4px;
+    padding:6px 10px;border-radius:6px;cursor:pointer;text-transform:uppercase;
+  }
+  .ua-btn:hover{background:var(--ink);color:#fff}
+  .ua-btn.danger{background:#FEF2F2;color:var(--danger)}
+  .ua-btn.danger:hover{background:var(--danger);color:#fff}
+  .ua-btn.mail:hover{background:var(--gold);color:var(--ink)}
+  .user-row-empty td{padding:30px;text-align:center;color:var(--muted);font-size:13.5px}
+  .user-table-meta{font-size:12px;color:var(--muted);font-family:"JetBrains Mono",monospace}
+  .user-table-admin{color:var(--gold-2);font-weight:700;letter-spacing:.4px;text-transform:uppercase;font-size:10.5px;font-family:"JetBrains Mono",monospace;background:var(--gold-soft);padding:2px 6px;border-radius:4px;margin-left:8px}
+</style>
+</head>
+<body>
+
+<!-- ============== LOGIN OVERLAY ============== -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="assets/logo-smarter-branco.png" alt="Smarter Estágios" />
+      <div class="sub">Universidade do Franqueado</div>
+    </div>
+    <h2>Bem-vindo de volta</h2>
+    <p class="hint">Acesse a plataforma com o e-mail e senha que você recebeu por e-mail.</p>
+    <div class="auth-error" id="authError"></div>
+    <form id="authForm" autocomplete="on">
+      <div class="auth-field"><label>E-mail</label><input type="email" id="authEmail" required autocomplete="username" placeholder="seu@email.com" /></div>
+      <div class="auth-field"><label>Senha</label><input type="password" id="authPass" required autocomplete="current-password" placeholder="••••••••" /></div>
+      <button type="submit" class="auth-submit">Entrar na universidade</button>
+    </form>
+    <div class="auth-footer">Esqueceu a senha? Solicite ao administrador da sua unidade.<br/><b>Treinamento Smarter Estágios</b></div>
+  </div>
+</div>
+
+<div class="mobile-bar">
+  <div style="display:flex;align-items:center;gap:10px">
+    <img src="assets/logo-smarter-branco.png" alt="Smarter" class="brand-mark-mobile" />
+    <div style="font-weight:600;font-size:12px;color:#9fb0cf;letter-spacing:1px">UNIVERSIDADE</div>
+  </div>
+  <button id="mobileToggle">Módulos</button>
+</div>
+
+<div class="app">
+  <!-- ============================ SIDEBAR ============================ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <img src="assets/logo-smarter-branco.png" alt="Smarter Estágios" class="brand-logo" />
+      <div class="brand-sub">Universidade · Treinamento do Franqueado</div>
+    </div>
+
+    <div class="progress-block">
+      <div class="progress-label"><span>Seu progresso</span><b><span id="progPct">0</span>%</b></div>
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    </div>
+
+    <nav class="nav-scroll" id="nav">
+      <div class="nav-section">Início</div>
+      <div class="nav-item" data-go="home"><div class="nav-num"><span>★</span></div>Visão geral</div>
+
+      <div class="nav-section">Fundamentos</div>
+      <div class="nav-item" data-go="m1"><div class="nav-num"><span>01</span></div>Boas-vindas</div>
+      <div class="nav-item" data-go="m2"><div class="nav-num"><span>02</span></div>Quem somos</div>
+      <div class="nav-item" data-go="m3"><div class="nav-num"><span>03</span></div>Mercado de estágios</div>
+      <div class="nav-item" data-go="m4"><div class="nav-num"><span>04</span></div>Modelo de negócio</div>
+      <div class="nav-item" data-go="m5"><div class="nav-num"><span>05</span></div>Papel do franqueado</div>
+
+      <div class="nav-section">Comercial</div>
+      <div class="nav-item" data-go="m6"><div class="nav-num"><span>06</span></div>Captação de empresas</div>
+      <div class="nav-item" data-go="m7"><div class="nav-num"><span>07</span></div>Scripts comerciais</div>
+      <div class="nav-item" data-go="m8"><div class="nav-num"><span>08</span></div>Vendendo o estágio</div>
+      <div class="nav-item" data-go="m9"><div class="nav-num"><span>09</span></div>Abertura de vaga</div>
+
+      <div class="nav-section">Estudantes & Operação</div>
+      <div class="nav-item" data-go="m10"><div class="nav-num"><span>10</span></div>Captação de estudantes</div>
+      <div class="nav-item" data-go="m11"><div class="nav-num"><span>11</span></div>Triagem de currículos</div>
+      <div class="nav-item" data-go="m12"><div class="nav-num"><span>12</span></div>Atendimento</div>
+      <div class="nav-item" data-go="m13"><div class="nav-num"><span>13</span></div>Operação do estágio</div>
+
+      <div class="nav-section">Gestão & Crescimento</div>
+      <div class="nav-item" data-go="m14"><div class="nav-num"><span>14</span></div>Indicadores</div>
+      <div class="nav-item" data-go="m15"><div class="nav-num"><span>15</span></div>Rotina diária</div>
+      <div class="nav-item" data-go="m16"><div class="nav-num"><span>16</span></div>Marketing local</div>
+      <div class="nav-item" data-go="m17"><div class="nav-num"><span>17</span></div>Crescimento & escala</div>
+      <div class="nav-item" data-go="m18"><div class="nav-num"><span>18</span></div>Erros comuns</div>
+      <div class="nav-item" data-go="m19"><div class="nav-num"><span>19</span></div>Cultura Smarter</div>
+      <div class="nav-item" data-go="m20"><div class="nav-num"><span>20</span></div>Próximo: o sistema</div>
+
+      <div class="nav-section nav-admin-only">Administração</div>
+      <div class="nav-item nav-admin-only" data-go="admin"><div class="nav-num"><span>⚙</span></div>Painel de usuários</div>
+    </nav>
+  </aside>
+
+  <!-- ============================ MAIN ============================ -->
+  <main class="main">
+    <div class="topbar">
+      <div class="crumbs">Universidade Smarter · <b id="crumb">Visão geral</b></div>
+      <div class="topbar-actions">
+        <div class="user-pill" id="userPill" style="display:none">
+          <div class="avatar" id="userAvatar">?</div>
+          <span class="name" id="userName">—</span>
+        </div>
+        <button class="btn ghost sm" id="resetBtn">Reiniciar progresso</button>
+        <button class="btn gold sm" id="completeBtn">Marcar como concluído</button>
+        <button class="btn ghost sm" id="logoutBtn">Sair</button>
+      </div>
+    </div>
+
+    <div class="content" id="content">
+
+      <!-- ============== HOME ============== -->
+      <section class="module active" id="home">
+        <div class="hero">
+          <div class="eyebrow">Universidade do Franqueado</div>
+          <h1>Tudo o que você precisa para operar, vender e escalar sua unidade.</h1>
+          <p>Um treinamento completo, do mindset à execução. Estratégia, abordagem comercial, captação de empresas e estudantes, operação do estágio, indicadores e rotina diária — antes mesmo de entrar no sistema.</p>
+          <div class="row">
+            <div class="pill">20 módulos</div>
+            <div class="pill">≈ 6 horas de treinamento</div>
+            <div class="pill">Scripts prontos</div>
+            <div class="pill">Checklists práticos</div>
+            <div class="pill">Quiz ao final</div>
+          </div>
+        </div>
+
+        <div class="grid grid-4" style="margin-bottom:28px">
+          <div class="stat"><div class="label">Módulos</div><div class="value">20</div><div class="sub">Da base ao crescimento</div></div>
+          <div class="stat"><div class="label">Scripts</div><div class="value">8</div><div class="sub">Prontos para usar</div></div>
+          <div class="stat"><div class="label">Checklists</div><div class="value">12+</div><div class="sub">Operacionais</div></div>
+          <div class="stat"><div class="label">Quiz</div><div class="value">5</div><div class="sub">De fixação</div></div>
+        </div>
+
+        <h2 style="margin-top:12px">Trilha de aprendizado</h2>
+        <p class="dim" style="max-width:720px">A trilha foi desenhada para ser executada em sequência. Cada módulo conclui-se com ações práticas que devem ser aplicadas na sua semana de operação.</p>
+
+        <div class="mods" id="modCards"></div>
+      </section>
+
+      <!-- ============== M1 ============== -->
+      <section class="module" id="m1">
+        <div class="module-tag">Módulo 01 · Fundamentos</div>
+        <h1 class="module-title">Boas-vindas à Universidade Smarter</h1>
+        <p class="module-lede">Você acaba de entrar para um time que transforma carreiras e impulsiona empresas. Este módulo é o seu ponto de partida — alinha mentalidade, expectativas e o que cobrar de si mesmo a partir de hoje.</p>
+
+        <div class="highlight" style="margin-top:24px">
+          <div class="icon">!</div>
+          <div><h4>Leia antes de continuar</h4><p>Franquia não é emprego. É um negócio. O que separa franqueados de alta performance dos demais é uma coisa: <b>execução diária</b>. Quem segue a rotina, fatura. Quem improvisa, definha.</p></div>
+        </div>
+
+        <h2>O que você vai aprender</h2>
+        <div class="grid grid-2">
+          <div class="card"><h3 style="margin-top:0">Estratégia</h3><p class="dim">Como pensar como dono de unidade, ler o mercado local e operar com previsibilidade.</p></div>
+          <div class="card"><h3 style="margin-top:0">Comercial</h3><p class="dim">Como prospectar, abordar, contornar objeções e abrir vagas com método.</p></div>
+          <div class="card"><h3 style="margin-top:0">Operação</h3><p class="dim">Como triar candidatos, atender, gerir contratos e cumprir SLAs Smarter.</p></div>
+          <div class="card"><h3 style="margin-top:0">Crescimento</h3><p class="dim">Como sair do zero, escalar a base de contratos e montar equipe.</p></div>
+        </div>
+
+        <h2>A mentalidade do franqueado de alta performance</h2>
+        <ul>
+          <li><strong>Foco em receita ativa, não em tarefas.</strong> Toda hora do seu dia precisa estar conectada a contrato.</li>
+          <li><strong>Volume gera consistência.</strong> Não existe vaga aberta sem prospecção. Não existe contrato sem candidato bom.</li>
+          <li><strong>Follow-up é o trabalho.</strong> 80% dos contratos vêm depois do 3º contato.</li>
+          <li><strong>Sistema é sagrado.</strong> O que não está registrado não existe — e não rende comissão.</li>
+        </ul>
+
+        <h2>Suas 3 metas dos primeiros 30 dias</h2>
+        <div class="grid grid-3">
+          <div class="stat"><div class="label">Dia 1–10</div><div class="value">100</div><div class="sub">empresas prospectadas</div></div>
+          <div class="stat"><div class="label">Dia 11–20</div><div class="value">5</div><div class="sub">vagas abertas</div></div>
+          <div class="stat"><div class="label">Dia 21–30</div><div class="value">3</div><div class="sub">contratos assinados</div></div>
+        </div>
+
+        <div class="callout" style="margin-top:24px">"Negócio bom não é o que paga fácil. É o que recompensa quem persiste."</div>
+      </section>
+
+      <!-- ============== M2 ============== -->
+      <section class="module" id="m2">
+        <div class="module-tag">Módulo 02 · Fundamentos</div>
+        <h1 class="module-title">Quem somos</h1>
+        <p class="module-lede">Para vender com convicção, você precisa entender — e acreditar — no que a Smarter representa no mercado.</p>
+
+        <div class="grid grid-2" style="margin-top:24px">
+          <div class="card">
+            <div class="chip ink">Missão</div>
+            <p>Conectar estudantes a oportunidades reais de estágio e apoiar empresas a formarem talentos com segurança, agilidade e qualidade.</p>
+          </div>
+          <div class="card">
+            <div class="chip ink">Visão</div>
+            <p>Ser referência nacional em integração de estágios, com a melhor experiência tanto para empresas quanto para estudantes.</p>
+          </div>
+          <div class="card">
+            <div class="chip ink">Valores</div>
+            <ul style="margin:6px 0">
+              <li>Agilidade na entrega</li>
+              <li>Profissionalismo no atendimento</li>
+              <li>Compromisso com o estudante</li>
+              <li>Crescimento por mérito</li>
+              <li>Ética e responsabilidade legal</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="chip ink">Posicionamento</div>
+            <p>Uma <strong>plataforma moderna</strong> de integração de estágios — não um cartório burocrático. Operamos como empresa de tecnologia: rápido, claro, mensurável.</p>
+          </div>
+        </div>
+
+        <h2>Smarter vs. agentes tradicionais</h2>
+        <table class="table">
+          <thead><tr><th>Critério</th><th>Agente tradicional</th><th>Smarter</th></tr></thead>
+          <tbody>
+            <tr><td><b>Tempo de retorno</b></td><td>Dias</td><td>Horas</td></tr>
+            <tr><td><b>Atendimento</b></td><td>E-mail formal</td><td>WhatsApp + sistema</td></tr>
+            <tr><td><b>Triagem</b></td><td>Manual e lenta</td><td>Triagem ativa por perfil</td></tr>
+            <tr><td><b>Visibilidade</b></td><td>Sem painel</td><td>Painel em tempo real</td></tr>
+            <tr><td><b>Relacionamento</b></td><td>Transacional</td><td>Consultivo e recorrente</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight" style="margin-top:22px">
+          <div class="icon">★</div>
+          <div><h4>Vença pela velocidade</h4><p>Empresa que pede vaga hoje quer candidato hoje. Quem responder primeiro, vence. Esta é a vantagem competitiva da Smarter — e a sua.</p></div>
+        </div>
+      </section>
+
+      <!-- ============== M3 ============== -->
+      <section class="module" id="m3">
+        <div class="module-tag">Módulo 03 · Fundamentos</div>
+        <h1 class="module-title">O mercado de estágios no Brasil</h1>
+        <p class="module-lede">Você está em um mercado regulado, crescente e com demanda permanente. Entender as peças do jogo é o que te dá autoridade na frente do cliente.</p>
+
+        <h2>As quatro peças do processo</h2>
+        <div class="flow">
+          <div class="flow-step"><div class="n">01</div><h5>Empresa</h5><p>Contrata estagiários para reduzir custo de mão de obra e formar talentos.</p></div>
+          <div class="flow-step"><div class="n">02</div><h5>Estudante</h5><p>Busca experiência prática vinculada ao curso e renda complementar.</p></div>
+          <div class="flow-step"><div class="n">03</div><h5>Instituição de ensino</h5><p>Valida a compatibilidade do estágio com o curso e assina o TCE.</p></div>
+          <div class="flow-step"><div class="n">04</div><h5>Agente de integração</h5><p>É você. Conecta as três pontas e garante a regularidade jurídica.</p></div>
+        </div>
+
+        <h2>O tamanho da oportunidade</h2>
+        <div class="grid grid-3">
+          <div class="stat"><div class="label">Estudantes elegíveis</div><div class="value">9M+</div><div class="sub">no ensino superior e técnico</div></div>
+          <div class="stat"><div class="label">Empresas no Brasil</div><div class="value">20M+</div><div class="sub">CNPJs ativos</div></div>
+          <div class="stat"><div class="label">Vagas não preenchidas</div><div class="value">~70%</div><div class="sub">por falta de candidato bom</div></div>
+        </div>
+        <p class="dim">Os números variam por região, mas a leitura é a mesma em qualquer cidade: <strong>tem muito mais empresa querendo estagiar do que franqueado batendo na porta</strong>. O mercado é seu.</p>
+
+        <h2>Por que empresas contratam estagiário</h2>
+        <div class="grid grid-2">
+          <div class="card"><h3 style="margin-top:0">Custo</h3><p class="dim">Bolsa-auxílio em vez de salário, sem encargos trabalhistas e sem FGTS.</p></div>
+          <div class="card"><h3 style="margin-top:0">Formação de talento</h3><p class="dim">Forma profissional sob medida para o jeito de operar da empresa.</p></div>
+          <div class="card"><h3 style="margin-top:0">Energia nova</h3><p class="dim">Traz visão fresca, digital e atualizada para o time.</p></div>
+          <div class="card"><h3 style="margin-top:0">Agilidade de contratação</h3><p class="dim">Não precisa de processo seletivo longo. Em até 7 dias o estagiário está dentro.</p></div>
+        </div>
+
+        <h2>E a sua oportunidade como franqueado?</h2>
+        <p>Receita recorrente, mercado pulverizado, ciclo de venda curto e contrato médio de 12 meses. <strong>Cada empresa fechada vira receita por meses, e cada vaga aberta gera múltiplas chances de contrato.</strong></p>
+      </section>
+
+      <!-- ============== M4 ============== -->
+      <section class="module" id="m4">
+        <div class="module-tag">Módulo 04 · Fundamentos</div>
+        <h1 class="module-title">Modelo de negócio da Smarter</h1>
+        <p class="module-lede">Sua unidade não vive de venda única. Vive de carteira ativa. Entenda como cada contrato vira receita e por que escala é matemática.</p>
+
+        <h2>Como a unidade ganha</h2>
+        <div class="grid grid-3">
+          <div class="card"><div class="chip gold">Receita 1</div><h3 style="margin-top:6px">Taxa administrativa</h3><p class="dim">Cobrança mensal por estagiário ativo, paga pela empresa contratante. É a base previsível da unidade.</p></div>
+          <div class="card"><div class="chip gold">Receita 2</div><h3 style="margin-top:6px">Adesão / abertura</h3><p class="dim">Cobrança única na assinatura do TCE em algumas modalidades.</p></div>
+          <div class="card"><div class="chip gold">Receita 3</div><h3 style="margin-top:6px">Renovação</h3><p class="dim">A cada 12 meses, novo ciclo, nova receita, mesmo cliente.</p></div>
+        </div>
+
+        <div class="highlight" style="margin-top:22px">
+          <div class="icon">∑</div>
+          <div><h4>A matemática da escalabilidade</h4><p>50 contratos ativos × R$ X mês = receita previsível. <strong>Quanto mais contratos vivos, menos você depende de venda nova.</strong> Sua meta é construir base, não vender estoque.</p></div>
+        </div>
+
+        <h2>Meta de crescimento mensal</h2>
+        <table class="table">
+          <thead><tr><th>Mês</th><th>Contratos novos</th><th>Base ativa</th><th>Foco</th></tr></thead>
+          <tbody>
+            <tr><td><b>1</b></td><td class="num">3</td><td class="num">3</td><td>Validar abordagem</td></tr>
+            <tr><td><b>2</b></td><td class="num">5</td><td class="num">8</td><td>Acelerar prospecção</td></tr>
+            <tr><td><b>3</b></td><td class="num">7</td><td class="num">15</td><td>Aumentar conversão</td></tr>
+            <tr><td><b>6</b></td><td class="num">10</td><td class="num">40+</td><td>Estruturar rotina</td></tr>
+            <tr><td><b>12</b></td><td class="num">12</td><td class="num">100+</td><td>Montar equipe</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Indicadores que importam</h2>
+        <ul>
+          <li><strong>CAC (Custo de Aquisição):</strong> quanto tempo/energia você gasta para fechar um contrato.</li>
+          <li><strong>Ticket médio:</strong> receita por contrato ativo.</li>
+          <li><strong>Churn:</strong> contratos que encerram antes do prazo. <strong>Menos de 5%/mês é saudável</strong>.</li>
+          <li><strong>LTV:</strong> receita total por cliente ao longo do tempo.</li>
+        </ul>
+      </section>
+
+      <!-- ============== M5 ============== -->
+      <section class="module" id="m5">
+        <div class="module-tag">Módulo 05 · Fundamentos</div>
+        <h1 class="module-title">O papel do franqueado</h1>
+        <p class="module-lede">Você não é "intermediário de papel". Você é um gestor comercial — e a sua cidade é o seu território.</p>
+
+        <h2>Três chapéus que você usa todo dia</h2>
+        <div class="grid grid-3">
+          <div class="card"><h3 style="margin-top:0">Gestor comercial</h3><p class="dim">Lidera prospecção, abordagem, fechamento e gestão de carteira. Lê funil. Bate meta.</p></div>
+          <div class="card"><h3 style="margin-top:0">Representante da marca</h3><p class="dim">Em cada conversa, é a Smarter falando. Tom, pontualidade e profissionalismo são padrão.</p></div>
+          <div class="card"><h3 style="margin-top:0">Agente de transformação</h3><p class="dim">Coloca estudantes em primeiras experiências e ajuda empresas a montar seus times do futuro.</p></div>
+        </div>
+
+        <h2>Comportamentos esperados</h2>
+        <ul class="checklist" data-key="m5c">
+          <li><div class="box">✓</div><div class="txt">Responder lead em até 15 minutos no horário comercial.</div></li>
+          <li><div class="box">✓</div><div class="txt">Atualizar o sistema diariamente — sem exceção.</div></li>
+          <li><div class="box">✓</div><div class="txt">Fazer follow-up de todo contato em até 48h.</div></li>
+          <li><div class="box">✓</div><div class="txt">Tratar empresa e estudante com o mesmo nível de atenção.</div></li>
+          <li><div class="box">✓</div><div class="txt">Bater meta de prospecção mesmo nos dias ruins.</div></li>
+        </ul>
+
+        <h2>Erros que matam a unidade</h2>
+        <div class="grid grid-2">
+          <div class="card"><h3 style="margin-top:0">Esperar lead chegar</h3><p class="dim">Lead não cai do céu. Cai do volume de prospecção que você faz.</p></div>
+          <div class="card"><h3 style="margin-top:0">Vender e sumir</h3><p class="dim">Cliente que não recebe pós-venda vira churn — e churn destrói carteira.</p></div>
+          <div class="card"><h3 style="margin-top:0">Falar demais, perguntar pouco</h3><p class="dim">Você descobre dor com pergunta. Não com pitch.</p></div>
+          <div class="card"><h3 style="margin-top:0">Operar sem indicador</h3><p class="dim">Sem número, você só acha que está trabalhando.</p></div>
+        </div>
+      </section>
+
+      <!-- ============== M6 ============== -->
+      <section class="module" id="m6">
+        <div class="module-tag">Módulo 06 · Comercial</div>
+        <h1 class="module-title">Captação de empresas</h1>
+        <p class="module-lede">Sua receita começa aqui. Volume + critério + abordagem = vagas abertas. Sem captação, não há operação.</p>
+
+        <h2>Perfil ideal de cliente</h2>
+        <div class="grid grid-2">
+          <div class="card"><div class="chip ok">Encaixe alto</div><h3 style="margin-top:6px">Quem é</h3><ul><li>Empresas com 10–500 colaboradores</li><li>Áreas: comercial, administrativa, marketing, TI, contábil, engenharia</li><li>Empresas em crescimento que reclamam de "achar gente boa"</li><li>Já trabalham com CLT, mas sem programa estruturado de estágio</li></ul></div>
+          <div class="card"><div class="chip" style="background:#FDEAEA;color:#7a1f1f">Encaixe baixo</div><h3 style="margin-top:6px">Quem evitar</h3><ul><li>MEIs sem CNPJ ativo</li><li>Empresas que não permitem contratação de menores ou estudantes</li><li>Negócios em estágio inicial sem caixa para bolsa</li><li>Quem só quer "mão de obra barata" sem propósito formativo</li></ul></div>
+        </div>
+
+        <h2>Segmentos prioritários</h2>
+        <div class="grid grid-4">
+          <div class="card" style="padding:14px"><h3 style="margin:0">Tecnologia</h3><p class="dim" style="margin:4px 0 0;font-size:13px">Devs, suporte, QA</p></div>
+          <div class="card" style="padding:14px"><h3 style="margin:0">Comércio</h3><p class="dim" style="margin:4px 0 0;font-size:13px">Vendas, atendimento</p></div>
+          <div class="card" style="padding:14px"><h3 style="margin:0">Indústria</h3><p class="dim" style="margin:4px 0 0;font-size:13px">Engenharia, logística</p></div>
+          <div class="card" style="padding:14px"><h3 style="margin:0">Serviços</h3><p class="dim" style="margin:4px 0 0;font-size:13px">Marketing, RH, jurídico</p></div>
+          <div class="card" style="padding:14px"><h3 style="margin:0">Contábil</h3><p class="dim" style="margin:4px 0 0;font-size:13px">Escritórios e consultorias</p></div>
+          <div class="card" style="padding:14px"><h3 style="margin:0">Saúde</h3><p class="dim" style="margin:4px 0 0;font-size:13px">Clínicas e laboratórios</p></div>
+          <div class="card" style="padding:14px"><h3 style="margin:0">Educacional</h3><p class="dim" style="margin:4px 0 0;font-size:13px">Escolas, cursos livres</p></div>
+          <div class="card" style="padding:14px"><h3 style="margin:0">Construtoras</h3><p class="dim" style="margin:4px 0 0;font-size:13px">Eng. civil, arquitetura</p></div>
+        </div>
+
+        <h2>Como montar sua lista de empresas</h2>
+        <div class="flow">
+          <div class="flow-step"><div class="n">FONTE 1</div><h5>Google Maps</h5><p>Busque por segmento + bairro. Extraia nome, telefone e site. 30 minutos = 50 empresas.</p></div>
+          <div class="flow-step"><div class="n">FONTE 2</div><h5>LinkedIn</h5><p>Filtre por região e porte. Conecte com gestores de RH, sócios e diretores.</p></div>
+          <div class="flow-step"><div class="n">FONTE 3</div><h5>Instagram</h5><p>Busque hashtags locais. Empresas ativas em rede social respondem mais rápido.</p></div>
+          <div class="flow-step"><div class="n">FONTE 4</div><h5>Associações e ACIs</h5><p>Filie-se à associação comercial local. Lista pronta, com porteiro aberto.</p></div>
+          <div class="flow-step"><div class="n">FONTE 5</div><h5>Indicações</h5><p>Pergunte a cada cliente novo: "Quem mais você indicaria?"</p></div>
+          <div class="flow-step"><div class="n">FONTE 6</div><h5>Eventos</h5><p>Feiras, encontros do setor, eventos da prefeitura. Crachá + cartão = lead.</p></div>
+        </div>
+
+        <h2>Como abordar — por canal</h2>
+        <div class="grid grid-2">
+          <div class="card"><h3 style="margin-top:0">WhatsApp</h3><p class="dim">Apresente-se em 2 linhas, ofereça ajuda específica e termine com pergunta simples. Sem corrente, sem áudio.</p></div>
+          <div class="card"><h3 style="margin-top:0">Telefone</h3><p class="dim">Use script. Fale o nome da empresa, peça o RH e tenha 30 segundos de pitch + 1 pergunta.</p></div>
+          <div class="card"><h3 style="margin-top:0">Presencial</h3><p class="dim">Visite com cartão, com fôlder e sem pressa. 3 visitas/semana criam autoridade local.</p></div>
+          <div class="card"><h3 style="margin-top:0">E-mail</h3><p class="dim">Assunto curto, corpo direto, link para abrir vaga. Aceite que e-mail converte pouco.</p></div>
+        </div>
+
+        <div class="highlight" style="margin-top:22px">
+          <div class="icon">→</div>
+          <div><h4>O objetivo da abordagem não é vender</h4><p>É <strong>abrir a vaga</strong>. Vaga aberta = empresa comprometida = candidato indo = contrato perto.</p></div>
+        </div>
+      </section>
+
+      <!-- ============== M7 ============== -->
+      <section class="module" id="m7">
+        <div class="module-tag">Módulo 07 · Comercial</div>
+        <h1 class="module-title">Scripts comerciais — do primeiro "oi" ao "sim, pode abrir"</h1>
+        <p class="module-lede">Scripts completos, fim-a-fim, construídos com técnicas de PNL, SPIN Selling, princípios de Cialdini e fechamento por compromisso. Use como base, personalize com o nome do gestor e da empresa, e respeite a sequência — cada bloco prepara o próximo.</p>
+
+        <h2>O motor por trás de cada script</h2>
+        <div class="tech-grid">
+          <div class="tech-card"><div class="key">PNL · Rapport</div><h5>Espelhamento + linguagem do cliente</h5><p>Use as mesmas palavras-chave que o gestor usar ("crescer", "time", "ajudar"). O cérebro relaxa quando reconhece o próprio padrão.</p></div>
+          <div class="tech-card"><div class="key">SPIN</div><h5>Situação → Problema → Implicação → Necessidade</h5><p>Não venda no primeiro contato. Faça perguntas que tragam a dor à tona — o cliente fecha quando ele mesmo verbaliza o problema.</p></div>
+          <div class="tech-card"><div class="key">CIALDINI</div><h5>Reciprocidade + Prova social + Compromisso</h5><p>Entregue algo de valor antes de pedir. Cite empresas parecidas. Faça micro-compromissos que levam ao "sim" final.</p></div>
+          <div class="tech-card"><div class="key">FECHAMENTO</div><h5>Pergunta de escolha, não de decisão</h5><p>Nunca pergunte "quer?" Pergunte "prefere A ou B?". O cérebro do gestor escolhe entre opções muito mais fácil do que decide entre sim e não.</p></div>
+        </div>
+
+        <div class="highlight" style="margin-top:18px">
+          <div class="icon">!</div>
+          <div><h4>Regras de ouro — leia antes de usar qualquer script</h4>
+            <p style="margin-top:6px"><b>1.</b> Nunca prometa prazo de entrega de candidato. <b>2.</b> Não fale de preço antes de gerar valor. <b>3.</b> Foque em <b>custo baixo</b>, <b>formação na cultura da empresa</b> e <b>ajuda no crescimento</b> — esses são os 3 únicos pilares de argumentação.</p>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:24px">
+
+          <!-- SCRIPT 1: Abordagem completa WhatsApp -->
+          <div class="card">
+            <div class="script-title"><h4>Script 1 — Abordagem fim-a-fim por WhatsApp (cold)</h4><button class="copy-btn">Copiar</button></div>
+            <p class="dim" style="margin:-4px 0 14px;font-size:13.5px">Objetivo: do primeiro "oi" até agendar uma conversa de 15 min. <b>Tempo médio de execução: 2–4 dias úteis.</b></p>
+
+            <div class="script full">
+              <span class="step">[Mensagem 1] · Quebra-gelo + permissão</span>
+              <span class="lead">Envie no início da manhã, segunda ou terça.</span>
+              <p>Oi, [NOME], tudo bem? Aqui é o(a) [SEU NOME], da <span class="hl">Smarter Estágios</span> de [CIDADE].</p>
+              <p>Sei que você é direto(a), então vou ser também: te procurei porque a [EMPRESA] apareceu no meu radar de empresas que <span class="hl">estão em fase de crescimento</span> aqui na região. <span class="hl">Posso te roubar 30 segundos?</span></p>
+
+              <span class="step">[Mensagem 2] — só após o "pode" do cliente] · Pergunta-âncora (SPIN: Situação)</span>
+              <p>Top. Hoje vocês têm algum estagiário no time, ou nunca passaram por isso ainda?</p>
+              <span class="lead">// As respostas levam a caminhos diferentes. Adapte a próxima mensagem ao que ele disser.</span>
+
+              <span class="step">[Mensagem 3a — se NUNCA contrataram] · SPIN: Implicação</span>
+              <p>Entendi. Posso te perguntar uma coisa? Quando você precisa de uma mão extra para tocar uma rotina mais operacional — relatório, atendimento, planilha, apoio comercial — o que costuma acontecer hoje? Acaba sobrando para você ou para alguém do time que já está cheio?</p>
+              <span class="lead">// Espere a resposta. Ela é a dor. Não pule.</span>
+
+              <span class="step">[Mensagem 3b — se JÁ tiveram estagiário] · SPIN: Problema</span>
+              <p>Massa, então você já sabe como funciona. Posso te perguntar: o que mais te incomodou na experiência anterior? Falta de comprometimento, perfil errado, parte burocrática, ou outra coisa?</p>
+
+              <span class="step">[Mensagem 4] · Geração de valor + autoridade (Cialdini)</span>
+              <p>Faz total sentido o que você falou. Olha, a gente trabalha com empresas como [CITAR 2 EMPRESAS LOCAIS PARCEIRAS — sem mencionar concorrentes] e o foco da Smarter é exatamente isso: <span class="hl">formar gente jovem dentro da cultura da empresa</span>, com custo bem abaixo de uma contratação CLT e <span class="hl">com a parte legal e documental 100% por nossa conta</span>.</p>
+              <p>O resultado prático: a empresa cresce com gente nova, formada do jeito de vocês — e o gestor não tem que abrir mão do tempo dele para isso.</p>
+
+              <span class="step">[Mensagem 5] · Convite com escolha (fechamento suave)</span>
+              <p>Faz sentido pra você bater um papo rápido de 15 minutinhos para eu entender melhor a realidade da [EMPRESA] e ver se faz sentido a gente desenhar isso aí dentro? <span class="hl">Você prefere amanhã de manhã ou quinta à tarde?</span></p>
+
+              <span class="step">[Mensagem 6 — fechamento da agenda]</span>
+              <p>Perfeito! Te mando o convite. Pode ser por Google Meet ou prefere que eu vá aí presencial? <span class="hl">Qual é melhor pra você?</span></p>
+            </div>
+          </div>
+
+          <!-- SCRIPT 2: Follow-up sem desconforto -->
+          <div class="card">
+            <div class="script-title"><h4>Script 2 — Sequência de Follow-up (3, 7 e 14 dias)</h4><button class="copy-btn">Copiar</button></div>
+            <p class="dim" style="margin:-4px 0 14px;font-size:13.5px">Objetivo: reativar sem irritar. Cada follow-up entrega algo novo — nunca repete a primeira mensagem.</p>
+
+            <div class="script full">
+              <span class="step">[Follow-up 1 — D+3] · Reciprocidade (entrega valor)</span>
+              <p>Oi, [NOME]! Aproveitando o assunto da nossa conversa, montei um material rápido (1 página) com os <span class="hl">3 erros mais comuns de quem contrata estagiário pela primeira vez</span>. Faz sentido eu te mandar? Sem custo, é meu jeito de ajudar mesmo que a gente não feche nada.</p>
+
+              <span class="step">[Follow-up 2 — D+7] · Pergunta direta + prova social</span>
+              <p>[NOME], só voltando aqui rapidinho. Fechei essa semana com a [CITAR EMPRESA LOCAL] que estava na mesma fase que vocês — eles começaram com um estagiário só para tirar a sobrecarga do comercial. <span class="hl">Quer que eu te conte em 2 linhas como ficou o desenho lá?</span></p>
+
+              <span class="step">[Follow-up 3 — D+14] · "Door-in-the-face" suave</span>
+              <p>Oi, [NOME]! Para eu não ficar te incomodando à toa: posso te perguntar de forma bem direta? Faz sentido continuar essa conversa nas próximas 2 semanas, ou prefere que eu te procure mais para frente quando vocês estiverem em outro momento?</p>
+              <span class="lead">// Essa pergunta dá uma "saída digna" pro cliente. Quem responde "agora não" volta. Quem some, você libera espaço.</span>
+
+              <span class="step">[Follow-up 4 — Lead frio reativado · D+60]</span>
+              <p>[NOME], faz um tempo que a gente conversou. A [CIDADE] mudou bastante de lá pra cá — várias empresas locais começaram a estruturar time com estagiário esse ano. <span class="hl">Pode ser uma boa hora pra gente revisitar o assunto?</span> Posso te ligar 10 minutinhos essa semana?</p>
+            </div>
+          </div>
+
+          <!-- SCRIPT 3: Ligação fria -->
+          <div class="card">
+            <div class="script-title"><h4>Script 3 — Ligação inicial (cold call estruturada)</h4><button class="copy-btn">Copiar</button></div>
+            <p class="dim" style="margin:-4px 0 14px;font-size:13.5px">Tempo total: 90 segundos no telefone. Objetivo: agendar reunião — não vender no telefone.</p>
+
+            <div class="script full">
+              <span class="step">[0–10s] · Quebrar padrão de "cold call"</span>
+              <p>"Oi, [NOME]? Aqui é o(a) [SEU NOME], da Smarter Estágios aqui de [CIDADE]. <span class="hl">Olha, te liguei numa hora ruim?</span>"</p>
+              <span class="lead">// Frase contraintuitiva. 80% responde "não, tudo bem" e libera 2 minutos de atenção.</span>
+
+              <span class="step">[10–40s] · Razão clara + permissão</span>
+              <p>"Vou ser bem direto pra respeitar seu tempo. Te liguei porque a gente tem ajudado empresas aqui de [CIDADE/REGIÃO] a <span class="hl">colocar gente jovem dentro do time com bolsa muito mais baixa que um CLT</span>, formando essa pessoa na cultura de vocês. Faz sentido eu te explicar em 1 minutinho como funciona, ou esse não é nada que tem a ver com o momento da [EMPRESA]?"</p>
+
+              <span class="step">[40–70s] · Pitch + pergunta de descoberta</span>
+              <p>"Resumindo: a gente cuida da parte legal, do contrato, da triagem dos estudantes, do seguro de vida — tudo. Você só recebe candidatos que fazem sentido pra função. <span class="hl">Hoje vocês têm alguma área onde está sobrando trabalho ou alguém do time já está com a corda no pescoço?</span>"</p>
+
+              <span class="step">[70–90s] · Fechamento da agenda (não venda nada agora)</span>
+              <p>"Top, entendi. Olha, esse assunto fica muito melhor numa conversa de 15 minutos do que no telefone agora. <span class="hl">Você prefere amanhã às 10h ou na quinta às 15h?</span> Te mando um convite no e-mail."</p>
+            </div>
+          </div>
+
+          <!-- SCRIPT 4: Reunião descoberta -->
+          <div class="card">
+            <div class="script-title"><h4>Script 4 — Reunião de descoberta (15 min, do "oi" ao "fecha")</h4><button class="copy-btn">Copiar</button></div>
+            <p class="dim" style="margin:-4px 0 14px;font-size:13.5px">Estrutura SPIN completa. <b>Você fala 30% do tempo, o cliente 70%.</b></p>
+
+            <div class="script full">
+              <span class="step">[Abertura · 2 min] · Rapport + agenda</span>
+              <p>"Obrigado pelo tempo, [NOME]. Pra gente aproveitar bem esses 15 minutos: vou te fazer umas 4 ou 5 perguntas pra entender a [EMPRESA], depois te explico em 3 minutos como funciona, e a gente decide juntos se faz ou não faz sentido. <span class="hl">Pode ser?</span>"</p>
+
+              <span class="step">[Situação · 3 min]</span>
+              <p>"Me conta rapidinho: quantas pessoas vocês são hoje? Quais áreas? Vocês estão em fase de crescimento, manutenção ou aperto?"</p>
+              <p>"E hoje, vocês têm algum estagiário, ou nunca passaram por isso?"</p>
+
+              <span class="step">[Problema · 3 min]</span>
+              <p>"Quando você olha o time hoje, tem alguma posição que <span class="hl">você sente que precisaria de ajuda, mas o custo de um CLT não fecha</span>?"</p>
+              <p>"E na parte de formação — vocês têm dificuldade em achar gente que entre e já abrace o jeito de trabalhar de vocês, ou isso flui?"</p>
+
+              <span class="step">[Implicação · 3 min] · Aqui a dor é amplificada</span>
+              <p>"Imagina que esse cenário se mantém pelos próximos 6 meses — a sobrecarga continua, ninguém entra pra ajudar. O que acontece com você e com o time?"</p>
+              <p>"E em quanto você estima que isso esteja te custando — em tempo seu, em oportunidade perdida, ou em gente do time desgastada?"</p>
+              <span class="lead">// É aqui que o cliente vende para ele mesmo. Não interrompa.</span>
+
+              <span class="step">[Necessidade-Solução · 2 min]</span>
+              <p>"Então deixa eu te perguntar de outro jeito: se eu te trouxesse alguém jovem, com energia, custo bem abaixo do CLT, <span class="hl">que você pudesse formar do zero no jeito da [EMPRESA] de trabalhar</span>, e com toda a parte legal por nossa conta — isso resolveria parte do que você acabou de me contar?"</p>
+
+              <span class="step">[Apresentação curta · 2 min]</span>
+              <p>"Perfeito. Como funciona, em 3 frases:</p>
+              <p>1) Você me passa o perfil — eu cuido da triagem e te envio só os candidatos que fizerem sentido.<br/>
+              2) Você entrevista, escolhe quem mais combina com a cultura de vocês.<br/>
+              3) A gente cuida do contrato, da instituição de ensino, do seguro de vida e do acompanhamento mensal.</p>
+              <p>O investimento mensal por estagiário é <span class="hl">muito menor que um colaborador CLT</span> — eu te detalho os valores depois que a gente desenhar a vaga, porque o custo varia conforme o perfil."</p>
+
+              <span class="step">[Fechamento por escolha]</span>
+              <p>"Pelo que conversamos hoje, faz sentido a gente <span class="hl">desenhar a vaga juntos agora</span> ou prefere que eu te mande primeiro um modelo de descrição e a gente fecha esses detalhes amanhã?"</p>
+              <span class="lead">// Note: as duas opções terminam em abertura de vaga. Esse é o ponto.</span>
+            </div>
+          </div>
+
+          <!-- SCRIPT 5: Empresa que já tem outro agente -->
+          <div class="card">
+            <div class="script-title"><h4>Script 5 — Empresa que já trabalha com outro agente</h4><button class="copy-btn">Copiar</button></div>
+            <div class="script full">
+              <span class="step">[Abertura · validação]</span>
+              <p>"[NOME], imagino que vocês já tenham um agente — o que pra mim é ótimo, mostra que a [EMPRESA] já entendeu o valor de ter estagiário no time. Não vim aqui pra falar mal de ninguém, viu?"</p>
+
+              <span class="step">[Pergunta de descoberta · não confronto]</span>
+              <p>"Posso te perguntar duas coisinhas pra eu entender o cenário?</p>
+              <p>1) Hoje, quando você precisa abrir uma vaga nova, em quantos dias <span class="hl">chegam candidatos que de fato fazem sentido</span> pro perfil?<br/>
+              2) Como tem sido a parte de acompanhamento mensal — alguém te procura ativamente, ou você só fala com eles quando precisa?"</p>
+
+              <span class="step">[Posicionamento sem ataque]</span>
+              <p>"Entendi. Olha, o que a Smarter faz de diferente são duas coisas: a gente tem <span class="hl">um time exclusivo na sua cidade</span> e <span class="hl">acompanhamento mensal proativo</span> com você e com o estagiário. Não é melhor nem pior — é uma abordagem diferente."</p>
+
+              <span class="step">[Compromisso pequeno · pé na porta]</span>
+              <p>"Que tal a gente fazer assim: <span class="hl">na próxima vaga que vocês abrirem, vocês mandam pros dois</span> — pro agente atual e pra Smarter. Sem trocar nada agora. E vocês comparam na prática, sem custo nenhum. <span class="hl">Topa testar?</span>"</p>
+
+              <span class="step">[Confirmação do próximo passo]</span>
+              <p>"Top. Te deixo meu contato fixado aqui, e na próxima necessidade você me chama. Posso te ligar daqui a 30 dias só pra ver se apareceu alguma vaga? Combina?"</p>
+            </div>
+          </div>
+
+          <!-- SCRIPT 6: Empresa que nunca contratou estagiário -->
+          <div class="card">
+            <div class="script-title"><h4>Script 6 — Empresa que nunca contratou estagiário</h4><button class="copy-btn">Copiar</button></div>
+            <div class="script full">
+              <span class="step">[Empatia · derrubar o medo]</span>
+              <p>"[NOME], que legal você ter sentado pra conversar. Olha, eu sei que pra muita empresa que nunca contratou estagiário existe aquela sensação de <span class="hl">'vai dar trabalho', 'é burocrático', 'e se der errado?'</span>. É super normal. Posso te tranquilizar em 3 pontos rapidinho?"</p>
+
+              <span class="step">[3 derrubadas de objeção pré-emptivas]</span>
+              <p><b>1) Custo:</b> A bolsa-auxílio é muito mais baixa que um CLT júnior. Sem INSS, sem FGTS, sem 13º. Você paga só a bolsa + a taxa Smarter, que é fixa por mês.</p>
+              <p><b>2) Burocracia:</b> Você não toca em nada. Contrato, plano de atividades, seguro de vida, vínculo com a instituição de ensino — tudo é a Smarter que faz e responde.</p>
+              <p><b>3) "E se não der certo?":</b> Não existe multa rescisória. Se em 30 dias não estiver funcionando, a gente substitui o estagiário sem custo extra.</p>
+
+              <span class="step">[Reframe: estagiário como construção de time, não custo]</span>
+              <p>"E tem uma coisa que pouca gente pensa de cara: <span class="hl">o estagiário não é só uma 'mão extra'.</span> Ele entra no início da carreira, sem vícios, e absorve o jeito da [EMPRESA] de trabalhar. Vários clientes nossos efetivaram esse estagiário depois — viraram analista, virou coordenador. <span class="hl">É a forma mais barata de formar gente da sua cultura.</span>"</p>
+
+              <span class="step">[Mini-compromisso]</span>
+              <p>"Vamos fazer assim: a gente desenha uma vaga juntos agora, só pra você ver como é o desenho. Sem compromisso. Você olha, decide se faz sentido pra próxima semana ou pro próximo mês. <span class="hl">Pode ser?</span>"</p>
+            </div>
+          </div>
+
+          <!-- SCRIPT 7: Pedido de indicação -->
+          <div class="card">
+            <div class="script-title"><h4>Script 7 — Pedido de indicação (cliente já ativo)</h4><button class="copy-btn">Copiar</button></div>
+            <div class="script full">
+              <span class="step">[Ancoragem positiva]</span>
+              <p>"[NOME], antes de qualquer coisa: como está sendo a experiência com o(a) [NOME DO ESTAGIÁRIO]? Quero saber se está fluindo bem."</p>
+              <span class="lead">// Espere o feedback. Se for positivo, siga. Se for neutro/negativo, resolva antes.</span>
+
+              <span class="step">[Pedido específico · não genérico]</span>
+              <p>"Que bom de ouvir isso. Olha, eu vou te fazer um pedido bem direto: a gente cresce muito por indicação aqui em [CIDADE]. <span class="hl">Você consegue pensar em 2 gestores conhecidos seus — não precisa ser amigo próximo, só alguém que você sabe que tem uma empresa em fase parecida com a sua</span> — que poderia se beneficiar do mesmo que você está tendo aqui?"</p>
+
+              <span class="step">[Facilitação do passo]</span>
+              <p>"Você prefere me passar o nome e eu falo com eles, ou prefere mandar um print dessa conversa e me apresenta? <span class="hl">O que for mais confortável pra você.</span>"</p>
+
+              <span class="step">[Retorno garantido · fechamento]</span>
+              <p>"Combinado. Te dou retorno do que aconteceu com cada um deles em até 15 dias. E muito obrigado, [NOME] — confiar uma indicação é a coisa mais valiosa que um cliente faz."</p>
+            </div>
+          </div>
+
+          <!-- SCRIPT 8: Fechamento de abertura de vaga -->
+          <div class="card">
+            <div class="script-title"><h4>Script 8 — Fechando a abertura da vaga (depois do "sim")</h4><button class="copy-btn">Copiar</button></div>
+            <div class="script full">
+              <span class="step">[Confirmação verbal + escassez suave]</span>
+              <p>"Show, [NOME]! Já adianto: <span class="hl">quanto antes a gente abrir a vaga, antes você consegue ver candidatos</span>. Tenho a tarde livre hoje, posso já te montar o desenho da vaga agora?"</p>
+
+              <span class="step">[Coleta estruturada · 7 itens]</span>
+              <p>Pra eu fazer isso, me passa rapidinho:</p>
+              <p>• Área e principais atividades do dia a dia<br/>
+              • Curso que você prefere (e se aceita afins)<br/>
+              • Carga horária e turno<br/>
+              • Bolsa-auxílio que vocês conseguem pagar<br/>
+              • Benefícios (VT, VR, etc)<br/>
+              • Local de trabalho (presencial, híbrido, remoto)<br/>
+              • Quem entrevista da parte de vocês</p>
+
+              <span class="step">[Fechamento por compromisso]</span>
+              <p>"Perfeito. Vou desenhar a vaga e te mando ainda hoje pra você aprovar o texto. <span class="hl">Assim que você me der o ok, eu já libero pra base.</span> Pode ser que comecem a chegar candidatos já amanhã ou depois — depende do perfil que apareça que faça sentido."</p>
+              <span class="lead">// NÃO PROMETA PRAZO. Diga "pode ser" e "depende do perfil". Cliente fica feliz quando chega rápido, sem se frustrar se demorar.</span>
+
+              <span class="step">[Reforço pós-fechamento]</span>
+              <p>"Parabéns pela decisão, [NOME]. Você acabou de dar um passo que poucos gestores tomam. Vou cuidar disso como se fosse uma vaga minha — qualquer coisa me chama no WhatsApp direto."</p>
+            </div>
+          </div>
+
+        </div>
+
+        <h2 style="margin-top:36px">Princípios que você precisa decorar</h2>
+        <ol>
+          <li><strong>Cale a boca depois da pergunta.</strong> Quem fala primeiro, perde. Faça a pergunta e espere — 5, 10, 30 segundos de silêncio. O cliente preenche.</li>
+          <li><strong>Use o nome do cliente 3x na conversa.</strong> Não mais. Não menos. A escuta ativa nominal cria conexão sem soar bajulador.</li>
+          <li><strong>Concorde antes de discordar.</strong> "Faz total sentido o que você falou. E só pra somar..."</li>
+          <li><strong>Não use a palavra "preço". Use "investimento".</strong> Não use "custo mensal". Use "valor por mês".</li>
+          <li><strong>Termine toda conversa com pergunta de escolha.</strong> "Prefere segunda ou terça?" sempre fecha mais que "tem disponibilidade essa semana?".</li>
+          <li><strong>Espelhe o ritmo do cliente.</strong> Se ele fala rápido, fale rápido. Se ele fala devagar, devagar. PNL aplicado.</li>
+        </ol>
+      </section>
+
+      <!-- ============== M8 ============== -->
+      <section class="module" id="m8">
+        <div class="module-tag">Módulo 08 · Comercial · O módulo mais importante</div>
+        <h1 class="module-title">Vendendo o estágio — Porta a Porta e reuniões reais</h1>
+        <p class="module-lede">A maior verdade do comercial Smarter: <strong>quem bate na porta, fecha</strong>. WhatsApp e e-mail enchem o funil, mas é o PaP — a visita presencial — que transforma franqueado iniciante em campeão de vendas. Este é o módulo que você mais vai voltar.</p>
+
+        <div class="highlight" style="margin-top:24px">
+          <div class="icon">★</div>
+          <div><h4>Por que o PaP é a melhor estratégia para o seu negócio</h4>
+          <p style="margin-top:6px">No bairro, o dono da loja não responde mensagem, não atende ligação de número desconhecido — mas <b>quando você entra educado, identificado e com proposta clara, ele te dá 5 minutos</b>. É esses 5 minutos que fecham vaga. O PaP combina: presença, autoridade visível, leitura do ambiente em tempo real e zero filtro de secretária. <b>Quem domina o PaP, não passa fome de cliente nunca mais.</b></p></div>
+        </div>
+
+        <h2>Os 3 pilares de argumentação (válidos em qualquer abordagem)</h2>
+        <div class="grid grid-3">
+          <div class="card"><div class="chip gold">Pilar 01</div><h3 style="margin-top:6px">Custo muito abaixo do CLT</h3><p class="dim">Bolsa-auxílio + taxa Smarter. Sem INSS, sem FGTS, sem 13º, sem férias remuneradas, sem multa rescisória. <b>É a forma mais econômica de colocar gente nova no time.</b></p></div>
+          <div class="card"><div class="chip gold">Pilar 02</div><h3 style="margin-top:6px">Formação na cultura da empresa</h3><p class="dim">Estagiário entra cedo, sem vícios. Você forma a pessoa dentro do jeito da [EMPRESA] de operar. Quando efetiva, já é parte do time.</p></div>
+          <div class="card"><div class="chip gold">Pilar 03</div><h3 style="margin-top:6px">Ajuda real no crescimento</h3><p class="dim">Tira sobrecarga do time atual, libera o gestor pra pensar no estratégico, e cria capacidade pra empresa crescer sem explodir folha.</p></div>
+        </div>
+
+        <div class="highlight" style="margin-top:18px">
+          <div class="icon">⌀</div>
+          <div><h4>Nunca prometa prazo de entrega de candidato</h4><p>Empresas frustradas não voltam. Diga: "depende do perfil que aparecer fazer sentido". Quando chega rápido, você é herói. Quando demora, ninguém cobra.</p></div>
+        </div>
+
+        <!-- =================== PAP MASTERCLASS =================== -->
+        <h2 style="margin-top:48px">Parte 1 · Porta a Porta — o método Smarter</h2>
+        <p>Antes de qualquer conversa, você precisa entender que <strong>PaP não é "sair batendo na porta de qualquer comércio"</strong>. É um método. Quem pula essa parte, queima energia e desiste em duas semanas. Quem segue o método, fecha vaga já na primeira semana.</p>
+
+        <h3>1. Como montar uma rota inteligente</h3>
+        <div class="grid grid-2">
+          <div class="card">
+            <h3 style="margin-top:0">Antes de sair de casa</h3>
+            <ul style="margin:0">
+              <li><b>Escolha 1 bairro por dia</b> — não pule de região. Você vira "o cara dos estágios daquele bairro".</li>
+              <li>Abra o <b>Google Maps</b> e marque uma rua-âncora (a rua comercial mais movimentada). Você caminha essa rua inteira, dos dois lados, sem cortar caminho.</li>
+              <li>Liste mentalmente os <b>tipos de comércio do bairro</b>: salões, padarias, pet shops, clínicas, óticas, farmácias, escritórios de contabilidade, imobiliárias. Foque em empresas de <b>5 a 30 funcionários</b> — tem demanda e o dono está acessível.</li>
+              <li>Saia com <b>20 cartões de visita</b>, caderneta, caneta e celular carregado.</li>
+              <li>Vista o uniforme Smarter (polo + crachá). Quem entra fardado é "profissional"; quem entra de blusa qualquer é "vendedor de algo".</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3 style="margin-top:0">Em campo</h3>
+            <ul style="margin:0">
+              <li><b>Comece pelas 10h.</b> Antes disso, comércio ainda está abrindo. Depois das 17h, está fechando caixa — ninguém te ouve.</li>
+              <li>Faça <b>uma rua de cada vez</b>, sentido único, dos dois lados. Não pule. Não retorne.</li>
+              <li>Meta: <b>15 a 20 visitas por dia</b>. Em cada uma, entre, fale, anote e siga.</li>
+              <li>Em cada visita anote: <b>nome do dono ou gerente, melhor horário pra voltar, "feeling" da loja (1 a 5)</b>. Isso vira ouro no follow-up.</li>
+              <li>Faça pausa de 15 min a cada 2 horas. PaP é maratona, não tiro.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>2. Como entrar na loja — os primeiros 10 segundos</h3>
+        <p>Esse é o momento que decide se você sai com vaga ou com porta fechada. <b>Memorize:</b></p>
+        <ol>
+          <li><strong>Cumprimente firme, olhando nos olhos:</strong> "Bom dia, tudo bem?" — espere o cumprimento de volta.</li>
+          <li><strong>Identifique-se com autoridade:</strong> "Meu nome é [SEU NOME], sou <span style="background:var(--gold-soft);padding:1px 6px;border-radius:4px">especialista em estágios aqui da região</span>, da Smarter."</li>
+          <li><strong>Peça permissão clara e curta:</strong> "Posso falar com o dono ou com quem cuida do time aqui, por 2 minutinhos?"</li>
+          <li><strong>Se o dono não estiver:</strong> peça <b>o WhatsApp dele</b> e <b>o melhor horário</b>. Anote, agradeça e saia. Não force.</li>
+          <li><strong>Se ele estiver:</strong> repita o cumprimento, entregue o cartão, e <b>siga para o método de descoberta</b> (a seguir).</li>
+        </ol>
+
+        <div class="highlight" style="margin-top:14px">
+          <div class="icon">★</div>
+          <div><h4>A palavra mágica: "especialista"</h4><p>Você não é "representante", não é "vendedor", não é "consultor". <b>Você é especialista em estágios da região.</b> Essa palavra muda completamente como o dono te recebe. Use sempre.</p></div>
+        </div>
+
+        <h3>3. Como apresentar — encontrar a dor antes de vender</h3>
+        <p>Depois do cumprimento, <b>não fale do produto.</b> Pergunte. Sempre. O dono de bairro adora falar do negócio dele — escutar é seu primeiro ato de venda.</p>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <h3 style="margin-top:0">Perguntas-mãe para qualquer comércio</h3>
+            <ul style="margin:0">
+              <li>"Há quanto tempo a [LOJA] está aqui no bairro?"</li>
+              <li>"Quantas pessoas trabalham com vocês hoje?"</li>
+              <li>"O movimento tá bom esse mês? Sobra trabalho ou tá tranquilo?"</li>
+              <li>"Tem alguma coisa que você gostaria de fazer aqui e não consegue por falta de gente?"</li>
+              <li>"Vocês já contrataram estagiário alguma vez?"</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3 style="margin-top:0">Dores típicas do comércio de bairro</h3>
+            <ul style="margin:0">
+              <li><b>"Ninguém atende o telefone"</b> — todo mundo está ocupado atendendo cliente presencial</li>
+              <li><b>"A recepção fica vazia"</b> — cliente entra e ninguém recebe</li>
+              <li><b>"Eu queria divulgar mais, mas não tenho braço"</b> — panfleto, redes sociais, abordagem na porta</li>
+              <li><b>"Não consigo lançar minhas redes sociais"</b></li>
+              <li><b>"Cliente entra e pergunta de promoção que eu nem sei explicar"</b></li>
+              <li><b>"Eu queria abrir um segundo ponto, mas tô preso aqui"</b></li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>4. Como ofertar a solução — encaixar o estagiário na dor</h3>
+        <p>Depois que o dono te conta a dor, <b>você não oferece "um estagiário". Você oferece a solução exata para o que ele acabou de te falar.</b></p>
+
+        <table class="table">
+          <thead><tr><th>Dor que o dono te disse</th><th>Solução que você devolve</th></tr></thead>
+          <tbody>
+            <tr><td>"Ninguém atende o telefone"</td><td>Estagiário fica na recepção / no telefone, agenda, confirma e qualifica os clientes pra você</td></tr>
+            <tr><td>"Recepção fica vazia"</td><td>Estagiário fica fixo recebendo o cliente, oferecendo café/água, acomodando — você fica liberado pro técnico</td></tr>
+            <tr><td>"Queria divulgar mais"</td><td>Estagiário entrega panfleto na esquina, faz prova de produto na porta, distribui amostra</td></tr>
+            <tr><td>"Não toco rede social"</td><td>Estagiário de marketing posta no Instagram, responde direct, agenda cliente pelo digital</td></tr>
+            <tr><td>"Cliente pergunta promoção que eu não sei"</td><td>Estagiário recebe treinamento de produto e vira "vendedor consultivo" da loja</td></tr>
+            <tr><td>"Queria abrir outro ponto"</td><td>Estagiário toca o operacional aqui, te libera estrategicamente pra abrir o segundo</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout" style="margin-top:24px">O segredo: <b>o estagiário não substitui ninguém — ele faz aquilo que está sobrando, mas que ninguém tem tempo de fazer</b>. Quando o dono entende isso, ele abre a vaga.</div>
+
+        <h3 style="margin-top:32px">5. Checklist de PaP — antes, durante e depois</h3>
+        <ul class="checklist" data-key="m8pap">
+          <li><div class="box">✓</div><div class="txt"><b>ANTES:</b> bairro definido, rota mapeada no Maps, uniforme vestido, 20 cartões na bolsa</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>ANTES:</b> abordagem decorada — você não pode gaguejar nos primeiros 10s</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>DURANTE:</b> sempre se apresentar como <b>"especialista em estágios da região"</b></li>
+          <li><div class="box">✓</div><div class="txt"><b>DURANTE:</b> escutar primeiro, falar depois — 70% do tempo o dono fala</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>DURANTE:</b> sair de cada loja com <b>WhatsApp anotado</b> ou <b>melhor horário de retorno</b></div></li>
+          <li><div class="box">✓</div><div class="txt"><b>DEPOIS:</b> no fim do dia, mandar mensagem de agradecimento pra cada um que conversou</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>DEPOIS:</b> registrar tudo no sistema antes das 19h, sem deixar pra "depois"</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>DEPOIS:</b> voltar pessoalmente em D+7 nas lojas que demonstraram interesse</div></li>
+        </ul>
+
+        <!-- =================== SIMULAÇÃO 1 — PADARIA =================== -->
+        <h2 style="margin-top:48px">Parte 2 · Simulação 1 — Reunião agendada (caso "Padaria Bom Pão")</h2>
+        <p class="module-lede" style="margin-top:0">A primeira conversa é uma <b>reunião agendada por WhatsApp depois de 2 follow-ups</b>. Empresário: <b>Sr. Carlos</b>, 48 anos, dono de uma padaria com 14 funcionários em fase de crescimento. Nunca contratou estagiário, tem medo de burocracia e diz que "estagiário não rende".</p>
+
+        <div class="dialog-wrap">
+
+          <div class="dialog-stage"><span class="n">FASE 1</span> Abertura · Rapport e desarme</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Carlos, primeiro: muito obrigado por reservar esse tempo. Sei que padaria não para — você abriu hoje às 5h, né?"</p>
+              <span class="tech">PNL</span><span class="tech gold">Rapport</span>
+              <div class="annot">Mostra que pesquisou o cliente. Quebra o padrão de "vendedor genérico" no primeiro segundo.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos · empresário</div>
+              <p>"4h40 hoje, na verdade. Mas pode ir, vendedor, eu já tô esperando o pitch."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Hahaha, pode deixar, vou te poupar do pitch. Só te peço uma coisa: a primeira metade dessa conversa vai ser eu perguntando e você falando. Se no fim não fizer sentido, a gente fecha em 5 minutos e ninguém perdeu tempo. <b>Combinado?</b>"</p>
+              <span class="tech">PNL</span><span class="tech gold">Contrato de conversa</span>
+              <div class="annot">Estabelece micro-compromisso. O "combinado?" é o primeiro "sim" da reunião.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"Combinado. Manda."</p>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 2</span> SPIN · Situação</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Carlos, me conta rapidinho: quantas pessoas trabalham na Bom Pão hoje? E como vocês estão dividindo o time — produção, atendimento, financeiro?"</p>
+              <span class="tech">SPIN</span><span class="tech gold">Situação</span>
+              <div class="annot">Pergunta aberta. Não traz dor ainda — gera contexto.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"São 14 no total. 7 na produção, 5 no atendimento, 1 no caixa e eu cuidando do administrativo. Aliás, eu e minha esposa."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Entendi. E quando vocês recebem nota fiscal, fazem pedido pra fornecedor, mexem com planilha de venda diária — quem toca isso?"</p>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"Cara, isso somos eu e a Patrícia. À noite, depois que a padaria fecha. Geralmente até 10, 11 da noite."</p>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 3</span> SPIN · Problema (achar a dor)</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Posso te fazer uma pergunta meio chata?"</p>
+              <span class="tech">PNL</span><span class="tech gold">Pré-pavimento</span>
+              <div class="annot">"Pergunta meio chata" baixa a guarda. O cliente autoriza a profundidade.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"Manda."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Quando foi a última vez que você e a Patrícia jantaram tranquilos, sem mexer em nota fiscal nem em planilha?"</p>
+              <span class="tech">SPIN</span><span class="tech gold">Problema · ataque emocional</span>
+              <div class="annot">Pergunta cirúrgica. Tira o problema do "negócio" e leva para o "pessoal". Aqui o cliente começa a sentir.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"Faz tempo. Tipo, sábado de noite que a gente tenta. Mas geralmente sobra coisa."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Carlos, faz total sentido. E me corrige se eu estiver errado: <b>o que tá te travando hoje é que a padaria cresceu, mas a parte administrativa continuou nas suas costas</b> — e você não consegue contratar um CLT pra isso porque não justifica o custo, certo?"</p>
+              <span class="tech">PNL</span><span class="tech gold">Resumo + validação</span>
+              <div class="annot">Repete a dor com as próprias palavras dele. Quando o cliente diz "exato", você venceu metade da batalha.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"Exatamente isso. Já cogitei contratar, mas pra ter alguém só na parte administrativa o custo total fica em quase R$ 3 mil com encargos. Não fecha."</p>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 4</span> SPIN · Implicação (amplifica a dor)</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Carlos, deixa eu te perguntar uma coisa pra eu entender o tamanho disso. Imagina que esse cenário continua exatamente igual pelos próximos 12 meses — você e a Patrícia tocando tudo à noite. <b>O que acontece com a padaria? E o que acontece com vocês dois?</b>"</p>
+              <span class="tech">SPIN</span><span class="tech gold">Implicação</span>
+              <div class="annot">Pergunta de implicação obriga o cliente a projetar a dor no futuro. É aqui que ele se convence.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"Honestamente? A gente tá esgotado. Eu vinha pensando em abrir uma segunda padaria no bairro de baixo, mas com esse ritmo é impossível. E a Patrícia tá falando em diminuir a participação na empresa."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Carlos, você tá me contando que o gargalo administrativo tá <b>travando uma expansão</b> e <b>colocando peso na sua família</b>. É isso?"</p>
+              <span class="tech gold">Resumo com peso</span>
+              <div class="annot">Cliente verbaliza a dor 2x. Cada vez que ele repete, o desejo de resolver cresce.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"É exatamente isso."</p>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 5</span> SPIN · Necessidade-Solução</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Então deixa eu te perguntar o seguinte. <b>Se eu te trouxesse uma pessoa jovem, fazendo administração ou contabilidade, 4 horas por dia, custando em torno de um terço do que um CLT custaria</b> — pra tocar nota fiscal, planilha, pedido de fornecedor, e que você pudesse formar do zero no jeito da Bom Pão de funcionar — isso resolveria parte do que você acabou de me contar?"</p>
+              <span class="tech">SPIN</span><span class="tech gold">Necessidade-Solução</span>
+              <div class="annot">Cliente verbaliza a solução. Ele não compra do vendedor — ele compra da própria boca.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"Cara, isso seria perfeito. Mas estagiário rende? E me explica o lance da burocracia."</p>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 6</span> Quebra de objeções</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"<b>Sobre o rendimento:</b> faz total sentido você ter essa percepção — porque <b>estagiário mal selecionado realmente não rende</b>. A diferença da Smarter é que <b>o trabalho de selecionar é nosso, não seu</b>. Te mando 3 currículos já filtrados por curso, semestre, perfil comportamental e disponibilidade. Você só vê quem faria sentido pra Bom Pão."</p>
+              <p>"<b>Sobre a burocracia:</b> você não toca em nada. Quem assina o contrato é a Smarter, junto com a instituição de ensino. Plano de atividades, seguro de vida — tudo nosso. <b>A Bom Pão só faz uma coisa: pagar a bolsa-auxílio e a taxa Smarter.</b> Acabou."</p>
+              <span class="tech">PNL</span><span class="tech gold">Concordar antes de discordar</span>
+              <div class="annot">"Faz sentido" desarma. Nunca diga "você está errado". Diga "faz sentido — e tem mais um detalhe".</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"E quanto custa? Vamos direto ao ponto."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Posso te responder com uma pergunta de volta? <b>Quanto você pagaria hoje pra recuperar 2 noites por semana em casa com a Patrícia e os meninos?</b>"</p>
+              <span class="tech">PNL</span><span class="tech gold">Reframe de preço para valor</span>
+              <div class="annot">Quando o cliente pergunta "quanto?" antes de ver valor, ele compara com R$ 0. Reframe pro valor real do problema antes de falar número.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"Pagaria bem caro. Mas me dá o número, vai."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Sem rodeio: o investimento total mensal pra esse perfil — bolsa-auxílio + taxa Smarter + vale-transporte — fica em torno de <b>menos da metade do que custaria um CLT na mesma função</b>. Eu te detalho o número exato depois que a gente desenhar a vaga, porque o valor da bolsa muda conforme o perfil e a carga horária. <b>Posso te mostrar o desenho agora?</b>"</p>
+              <span class="tech gold">Fechamento de transição</span>
+              <div class="annot">Cria expectativa, gera ancoragem ("menos da metade") e fecha pedindo o próximo passo.</div>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 7</span> Última objeção · "Tô receoso"</div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"Mostra. Mas tô meio receoso ainda."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Carlos, te entendo. Antes de mostrar, posso te perguntar uma coisa? <b>Quando você diz 'tô receoso', você tá receoso de quê especificamente?</b> Do custo, do risco da pessoa não dar certo, ou de você não conseguir tocar mais uma frente?"</p>
+              <span class="tech gold">Isolamento de objeção</span>
+              <div class="annot">"Receoso" é vago. Quebre em opções para descobrir a objeção real.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"É da pessoa não dar certo. Se eu pego alguém ruim eu perco mais tempo do que ganho."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Faz total sentido. Vou te dar duas garantias: <b>(1)</b> nos primeiros 30 dias, se o estagiário não estiver entregando o que vocês esperavam, a gente substitui sem custo. <b>(2)</b> Eu pessoalmente faço um check-in com você na semana 2 e na semana 4. <b>O risco é praticamente zero.</b>"</p>
+              <span class="tech">CIALDINI</span><span class="tech gold">Garantia + Reciprocidade</span>
+              <div class="annot">Tira o risco da decisão. Cliente fecha quando enxerga que pior cenário ainda é manejável.</div>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 8</span> Fechamento por escolha</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Carlos, deixa eu te propor o seguinte. <b>Vamos desenhar a vaga agora juntos — leva uns 10 minutinhos.</b> Você prefere que eu abra essa vaga hoje à noite, pra começar a chegar candidato amanhã, ou prefere que eu abra na segunda pra você ter o final de semana de cabeça tranquila pra pensar?"</p>
+              <span class="tech gold">Fechamento de escolha dupla</span>
+              <div class="annot">As duas opções terminam em vaga aberta. O cliente escolhe O QUANDO, nunca o SE.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Sr. Carlos</div>
+              <p>"Abre hoje à noite. Já cansei de adiar."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Fechou. <b>Parabéns pela decisão, Carlos.</b> Vou pegar agora as informações da vaga e até o fim do dia ela tá publicada. Pode ser que comece a chegar candidato amanhã ou depois — depende do perfil que apareça que faça sentido pra Bom Pão. Eu te aviso assim que tiver 3 currículos prontos pra você olhar."</p>
+              <span class="tech gold">Reforço pós-fechamento</span>
+              <div class="annot">"Parabéns pela decisão" reforça que ele fez uma boa escolha — reduz remorso de comprador.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- =================== SIMULAÇÃO 2 — SALÃO =================== -->
+        <h2 style="margin-top:48px">Parte 3 · Simulação 2 — PaP presencial num salão de beleza</h2>
+        <p class="module-lede" style="margin-top:0">Agora a conversa é <b>na porta, sem agenda</b>. Cenário: <b>Salão da Lê</b>, um salão de bairro com 6 funcionários (3 cabeleireiras, 2 manicures, 1 esteticista) + a dona, <b>Letícia</b>. O especialista entra batendo na porta, sem aviso prévio. É terça-feira, 11h da manhã — movimento moderado, dona disponível.</p>
+
+        <div class="dialog-wrap">
+
+          <div class="dialog-stage"><span class="n">FASE 1</span> Entrada · 10 segundos decisivos</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter <small style="font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0">(entra no salão, sorrindo, com crachá visível)</small></div>
+              <p>"Bom dia! Tudo bem por aqui? Você é a Letícia, dona do salão?"</p>
+              <span class="tech">PNL</span><span class="tech gold">Postura aberta + nome</span>
+              <div class="annot">Já entrou sabendo o nome da dona (viu no Google ou Instagram). Quem chega com o nome, é "alguém". Quem chega sem, é "vendedor qualquer".</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Letícia · dona do salão</div>
+              <p>"Bom dia, sou eu sim. Pois não?"</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Letícia, prazer! Meu nome é [SEU NOME], sou <span style="background:var(--gold-soft);padding:1px 6px;border-radius:4px">especialista em estágios aqui da região da Vila Mariana</span>, da Smarter. Tô passando nos salões e clínicas da rua e <b>queria te roubar 3 minutinhos</b> pra te apresentar uma coisa que talvez possa te ajudar. Pode ser?"</p>
+              <span class="tech gold">Permissão clara + escassez de tempo</span>
+              <div class="annot">"3 minutinhos" é mensurável. "Pode ser?" pede sim. Ninguém nega 3 minutos.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Letícia</div>
+              <p>"Pode, mas eu já te aviso que não tô precisando contratar ninguém agora. O movimento tá meio devagar essa semana."</p>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 2</span> Desarmar e investigar</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Imagina, Letícia, fica tranquila — eu nem vim te oferecer contratação. Vim só te conhecer, mesmo. Posso te fazer duas perguntinhas rápidas pra eu entender o salão?"</p>
+              <span class="tech gold">Tira a pressão de venda</span>
+              <div class="annot">"Não vim te oferecer" derruba a defesa. Agora ela libera espaço pra você perguntar.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Letícia</div>
+              <p>"Pode, manda."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Há quanto tempo o salão tá aqui na rua? E quantas profissionais trabalham com você hoje?"</p>
+              <span class="tech">SPIN</span><span class="tech gold">Situação</span>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Letícia</div>
+              <p>"Já são 6 anos. Hoje somos 6 meninas — 3 cabeleireiras, 2 manicures e a esteticista. Mais eu, que cuido de tudo."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"E me conta uma coisa: <b>quem atende o telefone quando o salão tá cheio? E a recepção, quando entra cliente pra primeira vez?</b>"</p>
+              <span class="tech">SPIN</span><span class="tech gold">Problema · pergunta cirúrgica</span>
+              <div class="annot">Aqui é o golpe. Em todo salão de bairro, ninguém atende o telefone direito e a recepção é "qualquer uma que tiver livre". Você sabe disso.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Letícia <small style="font-weight:500;color:var(--muted);text-transform:none">(suspira)</small></div>
+              <p>"Cara, isso é meu maior problema. O telefone toca, ninguém pega. Aí o cliente desiste e marca em outro salão. A recepção, quem tá livre na hora vai lá. Eu já perdi um monte de cliente novo que entrou aqui e ninguém olhou pra cara dele."</p>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 3</span> Amplificar a dor</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Letícia, posso te perguntar uma coisa meio chata? <b>Quanto você acha que perde por mês em cliente que ligou e não foi atendido, ou que entrou e não foi recebido?</b> Sem precisão, só um chute."</p>
+              <span class="tech">SPIN</span><span class="tech gold">Implicação financeira</span>
+              <div class="annot">Aqui você obriga ela a colocar número na dor. Quando ela disser o número, ela própria vai se assustar.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Letícia</div>
+              <p>"Putz... eu nunca parei pra contar, mas se eu perco 5 clientes novos por semana, e cada um faria pelo menos R$ 150 de serviço... são uns R$ 3 mil por mês que eu deixo de faturar. Mais ou menos isso."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Letícia, tô só repetindo o que você acabou de dizer: <b>você tá perdendo R$ 36 mil por ano porque ninguém atende o telefone e a recepção fica vazia.</b> É isso?"</p>
+              <span class="tech gold">Resumo amplificado</span>
+              <div class="annot">Você multiplicou o número mensal por 12. Quando ela ouvir "R$ 36 mil por ano", a dor cresce 12x.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Letícia</div>
+              <p>"Nossa... colocando assim, é muito dinheiro. Eu nunca tinha pensado nisso."</p>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 4</span> Apresentar a solução exata</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Letícia, deixa eu te mostrar o que eu acho que resolve isso. <b>E se você tivesse uma estagiária 4 horas por dia, sentada na recepção, atendendo todo telefone, recebendo todo cliente que entra, oferecendo café, agendando próximos retornos, e ainda postando no Instagram do salão?</b>"</p>
+              <span class="tech">SPIN</span><span class="tech gold">Necessidade-Solução</span>
+              <div class="annot">Encaixou todas as dores que ela falou em UMA pessoa. Note: você não falou "vou te vender um estagiário". Você desenhou a solução com base no que ela te disse.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Letícia</div>
+              <p>"Seria perfeito. Mas estagiário é caro? E não dá uma dor de cabeça?"</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Letícia, deixa eu te tranquilizar em duas coisas. <b>Primeiro o custo:</b> a bolsa-auxílio de uma estagiária 4 horas por dia, somando a taxa Smarter, fica em torno de <b>menos de um terço do que custaria uma CLT pra mesma função</b>. Sem INSS, sem FGTS, sem 13º. <b>Bem mais barato do que os R$ 3 mil que você tá deixando na mesa.</b>"</p>
+              <p>"<b>Segundo, dor de cabeça:</b> zero. A gente cuida do contrato, da instituição de ensino, do seguro de vida obrigatório, de tudo. Você só faz uma coisa: pagar a bolsa todo mês."</p>
+              <span class="tech gold">Ancoragem matemática</span>
+              <div class="annot">Comparou o investimento com o número que ELA acabou de dar. Investimento &lt; prejuízo. A conta fecha sozinha.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Letícia</div>
+              <p>"Hum. E se eu pegar uma menina que não sabe atender direito? Salão é detalhe — atender bem é arte."</p>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 5</span> Quebra da objeção da formação</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Letícia, essa é uma das melhores partes. <b>Estagiária é a única pessoa do mercado que entra sem vício.</b> Ela não vem de outro salão com mania de atender de outro jeito. Ela entra aqui no Salão da Lê e <b>aprende a atender do JEITO QUE VOCÊ ATENDE</b>. Você vai formar a profissional perfeita pra você. E se ela for boa, daqui a 1 ano você efetiva ela. <b>Você forma sua melhor recepcionista do zero, na sua cultura.</b>"</p>
+              <span class="tech">PNL</span><span class="tech gold">Reframe + Pilar Cultura</span>
+              <div class="annot">Transformou objeção em vantagem. Estagiária = matéria-prima moldável. CLT = profissional com vícios.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Letícia</div>
+              <p>"Verdade. Eu nunca tinha pensado assim. E pra começar, como funciona?"</p>
+            </div>
+          </div>
+
+          <div class="dialog-stage"><span class="n">FASE 6</span> Fechamento por escolha</div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Letícia, vou te propor o seguinte. <b>A gente desenha agora a vaga em 10 minutinhos</b> — você me fala o perfil que você quer (idade, curso, perfil de comunicação, horário), eu monto o desenho e te mostro como vai ser o anúncio. Você prefere <b>desenhar agora rapidinho, enquanto o movimento tá calmo</b>, ou prefere que eu volte amanhã às 10h pra gente fazer com calma?"</p>
+              <span class="tech gold">Fechamento de escolha dupla</span>
+              <div class="annot">Mesmo padrão da reunião com o Sr. Carlos: as duas opções resultam em vaga aberta. Ela escolhe o quando.</div>
+            </div>
+          </div>
+
+          <div class="turn e">
+            <div class="who">EMP</div>
+            <div class="bubble">
+              <div class="speaker">Letícia</div>
+              <p>"Faz agora. Tá calmo mesmo. Senta aí no sofazinho da recepção que eu te atendo."</p>
+            </div>
+          </div>
+
+          <div class="turn s">
+            <div class="who">SM</div>
+            <div class="bubble">
+              <div class="speaker">Especialista Smarter</div>
+              <p>"Show, Letícia. <b>Parabéns pela decisão</b> — você acabou de dar um passo pra recuperar os R$ 3 mil que você falou. Eu vou pegar o caderninho e a gente desenha juntos. Posso ainda te perguntar: você tem alguma menina cliente que já estuda e talvez tope esse papel? Indicação fecha mais rápido."</p>
+              <span class="tech gold">Reforço + indicação</span>
+              <div class="annot">Reforça a decisão e já planta a semente da indicação ainda na primeira conversa.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- =================== ANATOMIA + AJUSTES FINAIS =================== -->
+        <h2 style="margin-top:48px">Parte 4 · Anatomia do fechamento — o que aconteceu nessas conversas</h2>
+        <div class="grid grid-2">
+          <div class="card"><h3 style="margin-top:0">O que o especialista NÃO fez</h3><ul style="margin:0"><li>Não falou de preço antes de gerar valor</li><li>Não prometeu prazo de entrega de candidato</li><li>Não brigou com a objeção — desarmou ela</li><li>Não fez pitch institucional</li><li>Não citou concorrente</li><li>Não usou a palavra "vender"</li></ul></div>
+          <div class="card"><h3 style="margin-top:0">O que o especialista FEZ</h3><ul style="margin:0"><li>Entrou com nome do cliente sabido</li><li>Se apresentou como "especialista em estágios"</li><li>Pediu permissão para perguntar</li><li>Usou SPIN do início ao fim</li><li>Reframou preço em valor / prejuízo evitado</li><li>Isolou objeção real ("receoso de quê?")</li><li>Fechou com escolha de QUANDO</li></ul></div>
+        </div>
+
+        <h2>Quebra rápida das 7 objeções mais comuns</h2>
+        <table class="table">
+          <thead><tr><th>Objeção do cliente</th><th>Técnica</th><th>Resposta-modelo</th></tr></thead>
+          <tbody>
+            <tr><td>"Tô sem demanda agora."</td><td>Reframe</td><td>"Faz sentido. E me corrige se estiver errado: você não está sem demanda — está com demanda demais pra sua estrutura atual. É isso?"</td></tr>
+            <tr><td>"Já tenho outro agente."</td><td>Não-confronto</td><td>"Top, mostra que vocês já entendem o valor. Que tal eu ficar como segunda opção quando o atual não conseguir entregar perfil?"</td></tr>
+            <tr><td>"Vou pensar."</td><td>Isolamento</td><td>"Claro. Só pra eu te ajudar melhor: você quer pensar no custo, no risco da pessoa ou na decisão em si?"</td></tr>
+            <tr><td>"Estagiário não rende."</td><td>Concordar + redirigir</td><td>"Mal selecionado, não. Faz total sentido. Por isso a triagem é nossa — você só vê quem faria sentido pra vocês."</td></tr>
+            <tr><td>"Quanto custa?"</td><td>Reframe pro valor</td><td>"Posso te perguntar antes: quanto vale resolver o que a gente acabou de conversar?"</td></tr>
+            <tr><td>"Não tenho tempo agora."</td><td>Inversão</td><td>"Esse é exatamente o motivo de a gente conversar. Você não tem tempo porque tá sem ajuda. Posso te tirar isso da agenda?"</td></tr>
+            <tr><td>"Mando pro RH."</td><td>Co-decisão</td><td>"Perfeito. Vamos fazer juntos: você me indica quem é, eu mando o material já preparado e te marco na conversa pra você assinar embaixo."</td></tr>
+          </tbody>
+        </table>
+
+        <div class="highlight" style="margin-top:24px">
+          <div class="icon">▲</div>
+          <div><h4>A frase que muda o jogo</h4><p>"Deixa eu te perguntar de outro jeito..." — você pode usar essa frase 3x na mesma conversa. Ela reseta o diálogo sem perder o cliente e desbloqueia respostas que ele não daria de outra forma.</p></div>
+        </div>
+
+        <h2>Ajustes finais — o que diferencia o franqueado mediano do campeão</h2>
+        <ol>
+          <li><strong>Cale a boca depois da pergunta.</strong> Quem fala primeiro, perde. Conte mentalmente até 10 antes de quebrar o silêncio.</li>
+          <li><strong>Use o nome do cliente 3x na conversa.</strong> Não mais, não menos. Conexão sem bajulação.</li>
+          <li><strong>Concorde antes de discordar.</strong> "Faz total sentido o que você falou. E só pra somar..."</li>
+          <li><strong>Não use "preço". Use "investimento".</strong> Não use "custo mensal". Use "valor por mês".</li>
+          <li><strong>Termine toda conversa com pergunta de escolha.</strong> "Prefere segunda ou terça?" sempre fecha mais que "tem disponibilidade?".</li>
+          <li><strong>Espelhe o ritmo do cliente.</strong> Se ele fala rápido, fale rápido. Se ele fala devagar, devagar. PNL aplicada.</li>
+          <li><strong>Saia de cada conversa com um próximo passo claro.</strong> Mesmo um "não" tem que virar "me procura em 60 dias".</li>
+        </ol>
+
+        <!-- =================== FRASE MOTIVACIONAL FINAL =================== -->
+        <div style="margin-top:60px;background:linear-gradient(135deg,var(--ink) 0%, #0a1a36 100%);color:#fff;border-radius:var(--r-xl);padding:60px 50px;text-align:center;position:relative;overflow:hidden;box-shadow:var(--shadow-lg)">
+          <div style="position:absolute;right:-80px;top:-80px;width:340px;height:340px;background:radial-gradient(circle,rgba(245,184,0,.32) 0%,transparent 65%);pointer-events:none"></div>
+          <div style="position:absolute;left:-60px;bottom:-120px;width:300px;height:300px;background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 60%);pointer-events:none"></div>
+          <div style="position:relative;z-index:1">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:2.4px;text-transform:uppercase;color:var(--gold);font-weight:600">Sua última leitura deste módulo</div>
+            <h2 style="color:#fff;font-size:42px;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:20px auto 18px;max-width:880px;text-wrap:balance">Se você quer ver seu negócio decolar, pare de esperar o cliente entrar — <span style="color:var(--gold)">vista o uniforme, pegue a rua e bata na primeira porta</span>. É lá, na calçada, que está o próximo contrato.</h2>
+            <p style="color:#cdd6e6;font-size:16px;max-width:580px;margin:0 auto">O método está pronto. As palavras estão prontas. Agora só falta uma coisa: <b style="color:#fff">você</b>.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== M9 ============== -->
+      <section class="module" id="m9">
+        <div class="module-tag">Módulo 09 · Comercial</div>
+        <h1 class="module-title">Processo de abertura de vaga</h1>
+        <p class="module-lede">A vaga é o ativo. Vaga bem aberta = candidato certo, fechamento rápido e contrato saudável.</p>
+
+        <h2>Checklist de vaga completa</h2>
+        <ul class="checklist" data-key="m9c">
+          <li><div class="box">✓</div><div class="txt"><b>Razão social e CNPJ</b> da empresa contratante</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>Responsável e contato</b> (nome, cargo, e-mail, WhatsApp)</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>Descrição da vaga</b>: o que o estagiário vai fazer no dia a dia</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>Perfil desejado</b>: curso, semestre, hard e soft skills</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>Bolsa-auxílio</b> em R$ por mês</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>Carga horária</b> e horário (manhã/tarde/noite)</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>Local de trabalho</b>: presencial, híbrido ou remoto</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>Benefícios</b>: VT, VR, plano, day-off, etc.</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>Prazo de envio de candidatos</b> combinado com a empresa</div></li>
+          <li><div class="box">✓</div><div class="txt"><b>Quem entrevista</b> e horário disponível para entrevistas</div></li>
+        </ul>
+
+        <h2>Perguntas para fazer ao gestor</h2>
+        <div class="grid grid-2">
+          <div class="card">
+            <h3 style="margin-top:0">Sobre a vaga</h3>
+            <ul style="margin:0">
+              <li>O que o estagiário vai entregar nos primeiros 60 dias?</li>
+              <li>Quem será o gestor direto?</li>
+              <li>Há possibilidade de efetivação?</li>
+              <li>Tem alguma ferramenta específica que ele precise dominar?</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3 style="margin-top:0">Sobre o perfil</h3>
+            <ul style="margin:0">
+              <li>Você prefere comunicativo ou mais técnico?</li>
+              <li>Há preferência de faculdade?</li>
+              <li>Aceita estudante de fora da cidade?</li>
+              <li>É um perfil mais sênior dentro do estágio?</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top:24px">Quanto mais detalhada a vaga, menor o ruído na triagem — e maior a chance de o primeiro candidato ser o escolhido.</div>
+      </section>
+
+      <!-- ============== M10 ============== -->
+      <section class="module" id="m10">
+        <div class="module-tag">Módulo 10 · Estudantes & Operação</div>
+        <h1 class="module-title">Captação de estudantes</h1>
+        <p class="module-lede">Base de estudantes é estoque. Sem estoque, vaga aberta vira vaga perdida.</p>
+
+        <h2>Canais de captação</h2>
+        <div class="grid grid-3">
+          <div class="card"><h3 style="margin-top:0">Instagram</h3><p class="dim">Conteúdo de vagas + dicas de carreira. Stories diários, postagem de vagas semanais.</p></div>
+          <div class="card"><h3 style="margin-top:0">Grupos de WhatsApp</h3><p class="dim">1 grupo por curso/faculdade. Você modera, posta vagas e mantém ativo.</p></div>
+          <div class="card"><h3 style="margin-top:0">Faculdades & técnicos</h3><p class="dim">Coordenadores de curso, NPJs, núcleos de carreira. Vire fornecedor preferencial.</p></div>
+          <div class="card"><h3 style="margin-top:0">Eventos</h3><p class="dim">Feira de profissões, semana acadêmica. Cadastro com QR Code.</p></div>
+          <div class="card"><h3 style="margin-top:0">Indicação</h3><p class="dim">Estagiário satisfeito traz 3 colegas. Peça sempre.</p></div>
+          <div class="card"><h3 style="margin-top:0">Landing page</h3><p class="dim">Cadastro com curso, semestre e área de interesse. Tráfego pago local.</p></div>
+        </div>
+
+        <h2>Conteúdos que atraem estudantes</h2>
+        <ul>
+          <li><strong>Postagens de vagas</strong> com bolsa, cidade e empresa em destaque.</li>
+          <li><strong>Dicas de currículo</strong> em carrossel ou stories.</li>
+          <li><strong>"O que esperar do seu primeiro estágio"</strong> — conteúdo emocional.</li>
+          <li><strong>Antes e depois</strong> de estagiários que foram efetivados.</li>
+          <li><strong>Bastidores</strong> do dia a dia do franqueado — humaniza a marca.</li>
+        </ul>
+
+        <h2>Como manter a base ativa</h2>
+        <div class="grid grid-2">
+          <div class="card"><h3 style="margin-top:0">Comunicação</h3><p class="dim">Envie vagas relevantes 1–2x por semana, sem spam. Use lista de transmissão.</p></div>
+          <div class="card"><h3 style="margin-top:0">Atualização cadastral</h3><p class="dim">A cada 3 meses, peça update de semestre, disponibilidade e cidade.</p></div>
+          <div class="card"><h3 style="margin-top:0">Feedback</h3><p class="dim">Quem foi triado e não passou: explique o porquê. Cria confiança e reativa.</p></div>
+          <div class="card"><h3 style="margin-top:0">Acolhimento</h3><p class="dim">Quem é aprovado: parabenize, oriente sobre TCE e mantenha contato pós-início.</p></div>
+        </div>
+      </section>
+
+      <!-- ============== M11 ============== -->
+      <section class="module" id="m11">
+        <div class="module-tag">Módulo 11 · Estudantes & Operação</div>
+        <h1 class="module-title">Triagem de currículos</h1>
+        <p class="module-lede">Boa triagem é o que protege a sua reputação. Empresa que recebe candidato ruim não abre vaga de novo.</p>
+
+        <h2>O filtro Smarter — 5 critérios</h2>
+        <div class="grid grid-3">
+          <div class="card"><h3 style="margin-top:0">1. Curso compatível</h3><p class="dim">A vaga é de marketing? Não envie aluno de engenharia mecânica "que se interessa".</p></div>
+          <div class="card"><h3 style="margin-top:0">2. Semestre adequado</h3><p class="dim">Empresa pediu 4º ao 7º? Não force 2º semestre.</p></div>
+          <div class="card"><h3 style="margin-top:0">3. Disponibilidade real</h3><p class="dim">Confirme horário. Mais da metade dos cancelamentos vem de choque de grade.</p></div>
+          <div class="card"><h3 style="margin-top:0">4. Localização</h3><p class="dim">Estagiário 60km longe = falta + atraso = desligamento.</p></div>
+          <div class="card"><h3 style="margin-top:0">5. Comunicação</h3><p class="dim">Triagem rápida por chamada de vídeo de 5 minutos resolve.</p></div>
+        </div>
+
+        <h2>Shortlist padrão</h2>
+        <p>Envie sempre <strong>3 candidatos por vaga</strong>. Mais que isso satura a empresa; menos que isso fragiliza a opção.</p>
+        <ol>
+          <li><strong>Top fit:</strong> aquele que você apostaria.</li>
+          <li><strong>Alternativa técnica:</strong> mais experiência, talvez menos brilho.</li>
+          <li><strong>Surpresa:</strong> perfil promissor, comunicativo, ainda no início.</li>
+        </ol>
+
+        <div class="highlight" style="margin-top:18px">
+          <div class="icon">★</div>
+          <div><h4>Comente cada candidato</h4><p>Junto com o currículo, mande 2 linhas sobre cada um: "Forte em X, ponto a desenvolver Y". Empresa adora. Diferencia você.</p></div>
+        </div>
+
+        <h2>Como acompanhar retorno</h2>
+        <ul>
+          <li>Em até 24h após envio: confirme recebimento e pergunte se podem ler.</li>
+          <li>Em até 72h: pergunte sobre entrevista.</li>
+          <li>Após entrevista: feedback de cada candidato + próximo passo.</li>
+          <li>Aprovado: ative o fluxo de contrato em até 24h.</li>
+        </ul>
+      </section>
+
+      <!-- ============== M12 ============== -->
+      <section class="module" id="m12">
+        <div class="module-tag">Módulo 12 · Estudantes & Operação</div>
+        <h1 class="module-title">Atendimento e relacionamento</h1>
+        <p class="module-lede">Atendimento bom transforma cliente em fã. E fã indica, renova e perdoa pequenos erros. Atendimento ruim destrói carteira.</p>
+
+        <h2>Padrão Smarter de atendimento</h2>
+        <table class="table">
+          <thead><tr><th>SLA</th><th>Padrão</th></tr></thead>
+          <tbody>
+            <tr><td><b>Primeira resposta</b></td><td>Até 15 minutos no horário comercial</td></tr>
+            <tr><td><b>Envio de candidatos</b></td><td>Até 48h após abertura da vaga</td></tr>
+            <tr><td><b>Documentação</b></td><td>Contrato em até 72h após aprovação</td></tr>
+            <tr><td><b>Suporte mensal</b></td><td>Check-in com empresa todo mês</td></tr>
+            <tr><td><b>Resolução de problema</b></td><td>Resposta + plano de ação no mesmo dia</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Tom de voz</h2>
+        <div class="grid grid-3">
+          <div class="card"><h3 style="margin-top:0">Com empresas</h3><p class="dim">Profissional, consultivo, direto. Trate gestor como par, não como cliente.</p></div>
+          <div class="card"><h3 style="margin-top:0">Com estudantes</h3><p class="dim">Acolhedor, claro, paciente. Lembre-se: é o primeiro emprego dele.</p></div>
+          <div class="card"><h3 style="margin-top:0">Com instituições</h3><p class="dim">Formal, técnico, pontual. Documentação rege essa relação.</p></div>
+        </div>
+
+        <h2>Como lidar com problemas</h2>
+        <ol>
+          <li><strong>Ouça primeiro.</strong> Não interrompa, não defenda a marca. Anote.</li>
+          <li><strong>Resuma o problema</strong> em voz alta — confirma que você entendeu.</li>
+          <li><strong>Apresente solução com prazo.</strong> "Hoje até 18h eu volto com X."</li>
+          <li><strong>Cumpra o prazo.</strong> Sempre. Mesmo que seja para dizer que vai atrasar.</li>
+          <li><strong>Registre no sistema</strong> para evitar repetição.</li>
+        </ol>
+      </section>
+
+      <!-- ============== M13 ============== -->
+      <section class="module" id="m13">
+        <div class="module-tag">Módulo 13 · Estudantes & Operação</div>
+        <h1 class="module-title">Operação do estágio</h1>
+        <p class="module-lede">Do "sim" da empresa ao primeiro dia do estagiário. Esse é o fluxo que tem que rodar no automático.</p>
+
+        <div class="flow" style="margin-top:20px">
+          <div class="flow-step"><div class="n">01</div><h5>Empresa abre vaga</h5><p>Checklist preenchido + responsável + prazo combinado.</p></div>
+          <div class="flow-step"><div class="n">02</div><h5>Smarter divulga</h5><p>Lista de transmissão, Instagram, grupos e base ativa.</p></div>
+          <div class="flow-step"><div class="n">03</div><h5>Estudante se candidata</h5><p>Currículo + breve resposta sobre disponibilidade.</p></div>
+          <div class="flow-step"><div class="n">04</div><h5>Triagem</h5><p>Filtro Smarter aplicado. Shortlist de 3.</p></div>
+          <div class="flow-step"><div class="n">05</div><h5>Entrevista</h5><p>Você agenda, confirma e cobra retorno.</p></div>
+          <div class="flow-step"><div class="n">06</div><h5>Aprovação</h5><p>Empresa escolhe. Você comunica todos os candidatos.</p></div>
+          <div class="flow-step"><div class="n">07</div><h5>Documentação</h5><p>TCE, plano de atividades, seguro de vida, instituição.</p></div>
+          <div class="flow-step"><div class="n">08</div><h5>Assinatura do TCE</h5><p>3 partes: estudante, empresa, instituição de ensino.</p></div>
+          <div class="flow-step"><div class="n">09</div><h5>Início do estágio</h5><p>Mensagem de boas-vindas + ligação na 1ª semana.</p></div>
+          <div class="flow-step"><div class="n">10</div><h5>Acompanhamento mensal</h5><p>Check-in com empresa e estudante. Registre tudo.</p></div>
+          <div class="flow-step"><div class="n">11</div><h5>Renovação ou encerramento</h5><p>3 meses antes do fim: combinar renovação ou nova vaga.</p></div>
+        </div>
+
+        <div class="highlight" style="margin-top:22px">
+          <div class="icon">⟲</div>
+          <div><h4>O fluxo é circular</h4><p>Encerrou um estágio? A empresa precisa de outro. Já comece o ciclo de novo, ainda no encerramento.</p></div>
+        </div>
+      </section>
+
+      <!-- ============== M14 ============== -->
+      <section class="module" id="m14">
+        <div class="module-tag">Módulo 14 · Gestão & Crescimento</div>
+        <h1 class="module-title">Indicadores da unidade</h1>
+        <p class="module-lede">O que não é medido, não é gerido. Sua unidade vive ou morre nos números abaixo.</p>
+
+        <h2>Dashboard padrão</h2>
+        <div class="kpi-grid">
+          <div class="kpi"><div class="label">Empresas prospectadas</div><div class="v">142</div><div class="target">Meta: 150/sem</div><div class="bar"><i style="width:94%"></i></div></div>
+          <div class="kpi"><div class="label">Empresas respondidas</div><div class="v">38</div><div class="target">Meta: 40/sem</div><div class="bar"><i style="width:95%"></i></div></div>
+          <div class="kpi"><div class="label">Reuniões</div><div class="v">12</div><div class="target">Meta: 15/sem</div><div class="bar"><i style="width:80%"></i></div></div>
+          <div class="kpi"><div class="label">Vagas abertas</div><div class="v">7</div><div class="target">Meta: 5/sem</div><div class="bar"><i style="width:100%"></i></div></div>
+          <div class="kpi"><div class="label">Currículos captados</div><div class="v">96</div><div class="target">Meta: 80/sem</div><div class="bar"><i style="width:100%"></i></div></div>
+          <div class="kpi"><div class="label">Candidatos enviados</div><div class="v">21</div><div class="target">Meta: 20/sem</div><div class="bar"><i style="width:100%"></i></div></div>
+          <div class="kpi"><div class="label">Contratos ativos</div><div class="v">48</div><div class="target">Meta mês: 50</div><div class="bar"><i style="width:96%"></i></div></div>
+          <div class="kpi"><div class="label">Taxa de conversão</div><div class="v">8,3%</div><div class="target">Empresa → contrato</div><div class="bar"><i style="width:70%"></i></div></div>
+        </div>
+
+        <h2>Como ler os indicadores</h2>
+        <ul>
+          <li><strong>Prospecção baixa?</strong> Volume cura tudo. Aumente o topo do funil.</li>
+          <li><strong>Resposta baixa?</strong> Mexa no script de abordagem.</li>
+          <li><strong>Vagas abertas, mas sem candidato?</strong> Sua base de estudantes está fraca.</li>
+          <li><strong>Candidato enviado, mas sem fechamento?</strong> Qualidade da triagem precisa subir.</li>
+          <li><strong>Conversão alta, mas receita baixa?</strong> Ticket médio precisa subir — vá para empresas maiores.</li>
+        </ul>
+      </section>
+
+      <!-- ============== M15 ============== -->
+      <section class="module" id="m15">
+        <div class="module-tag">Módulo 15 · Gestão & Crescimento</div>
+        <h1 class="module-title">Rotina diária do franqueado</h1>
+        <p class="module-lede">A unidade que gera caixa é a que tem rotina. Cole isto na parede.</p>
+
+        <h2>Bloco de horários</h2>
+        <div class="routine">
+          <div class="hour">08h–12h</div>
+          <div class="block"><h5>Prospecção</h5><p>Listar + abordar 30–50 empresas novas. Foco em volume e ritmo. Sem reunião nesse bloco.</p></div>
+        </div>
+        <div class="routine">
+          <div class="hour">12h–13h</div>
+          <div class="block"><h5>Almoço</h5><p>Desconecte. Energia para a tarde.</p></div>
+        </div>
+        <div class="routine">
+          <div class="hour">13h–15h</div>
+          <div class="block"><h5>Follow-up</h5><p>5 follow-ups com leads em conversa. Reativar 5 leads frios.</p></div>
+        </div>
+        <div class="routine">
+          <div class="hour">15h–17h</div>
+          <div class="block"><h5>Atendimento e abertura de vagas</h5><p>Reuniões com empresas, abertura de vaga, triagem.</p></div>
+        </div>
+        <div class="routine">
+          <div class="hour">17h–18h</div>
+          <div class="block"><h5>Atualização do sistema</h5><p>Lançar todos os contatos do dia, atualizar funil, fechar indicadores.</p></div>
+        </div>
+
+        <h2>Metas diárias</h2>
+        <div class="grid grid-4">
+          <div class="stat"><div class="label">Contatos novos</div><div class="value">30–50</div><div class="sub">topo do funil</div></div>
+          <div class="stat"><div class="label">Conversas iniciadas</div><div class="value">10</div><div class="sub">com resposta</div></div>
+          <div class="stat"><div class="label">Follow-ups</div><div class="value">5</div><div class="sub">do dia</div></div>
+          <div class="stat"><div class="label">Vaga aberta</div><div class="value">1</div><div class="sub">por dia útil</div></div>
+        </div>
+        <div class="grid grid-4" style="margin-top:14px">
+          <div class="stat"><div class="label">Estudantes cadastrados</div><div class="value">20</div><div class="sub">novos por dia</div></div>
+          <div class="stat"><div class="label">Currículos triados</div><div class="value">10</div><div class="sub">para shortlist</div></div>
+          <div class="stat"><div class="label">Sistema atualizado</div><div class="value">100%</div><div class="sub">sem exceção</div></div>
+          <div class="stat"><div class="label">Reuniões agendadas</div><div class="value">2</div><div class="sub">para a semana</div></div>
+        </div>
+
+        <div class="callout" style="margin-top:22px">Sua semana é o reflexo dos seus blocos de horário. Se a rotina cair, o caixa cai junto.</div>
+      </section>
+
+      <!-- ============== M16 ============== -->
+      <section class="module" id="m16">
+        <div class="module-tag">Módulo 16 · Gestão & Crescimento</div>
+        <h1 class="module-title">Marketing local da unidade</h1>
+        <p class="module-lede">Sua unidade é uma marca local. Não precisa de mídia paga gigante — precisa de presença consistente.</p>
+
+        <h2>O que postar</h2>
+        <div class="grid grid-2">
+          <div class="card"><h3 style="margin-top:0">Para empresas</h3><ul style="margin:0"><li>Provas sociais ("Mais uma empresa parceira")</li><li>Cases de efetivação</li><li>Conteúdo sobre custo de mão de obra</li><li>Tendências do mercado de talentos</li></ul></div>
+          <div class="card"><h3 style="margin-top:0">Para estudantes</h3><ul style="margin:0"><li>Vagas abertas com filtros claros</li><li>Dicas de currículo e entrevista</li><li>Histórias de sucesso de ex-estagiários</li><li>Bastidores do dia a dia da unidade</li></ul></div>
+        </div>
+
+        <h2>Frequência mínima</h2>
+        <ul>
+          <li><strong>Instagram:</strong> 3 posts/semana + stories diários.</li>
+          <li><strong>LinkedIn:</strong> 2 posts/semana, foco em autoridade.</li>
+          <li><strong>WhatsApp lista:</strong> 1–2 disparos/semana, sempre com vaga.</li>
+        </ul>
+
+        <h2>Autoridade local</h2>
+        <p>Vire o "cara do estágio" da sua cidade:</p>
+        <ul>
+          <li>Palestre em faculdades 1x por mês.</li>
+          <li>Participe da associação comercial local.</li>
+          <li>Apareça em jornal/podcast local quando puder.</li>
+          <li>Crie um evento anual de carreira na sua cidade.</li>
+        </ul>
+      </section>
+
+      <!-- ============== M17 ============== -->
+      <section class="module" id="m17">
+        <div class="module-tag">Módulo 17 · Gestão & Crescimento</div>
+        <h1 class="module-title">Crescimento & escala</h1>
+        <p class="module-lede">Os 90 primeiros dias decidem a unidade. Veja o plano.</p>
+
+        <h2>Plano de 30 / 60 / 90 dias</h2>
+        <div class="grid grid-3">
+          <div class="card">
+            <div class="chip gold">Dia 1–30</div>
+            <h3 style="margin-top:6px">Validação</h3>
+            <ul><li>Listar 500 empresas</li><li>Abordar 300</li><li>Abrir 5 vagas</li><li>Fechar 3 contratos</li><li>Captar 100 estudantes</li></ul>
+          </div>
+          <div class="card">
+            <div class="chip gold">Dia 31–60</div>
+            <h3 style="margin-top:6px">Aceleração</h3>
+            <ul><li>Aprimorar script</li><li>Dobrar prospecção</li><li>Abrir 10 vagas</li><li>Fechar 8 contratos</li><li>Captar 250 estudantes</li></ul>
+          </div>
+          <div class="card">
+            <div class="chip gold">Dia 61–90</div>
+            <h3 style="margin-top:6px">Estruturação</h3>
+            <ul><li>Definir nicho forte</li><li>Pedir indicações</li><li>15+ vagas mês</li><li>15+ contratos ativos</li><li>Avaliar 1ª contratação</li></ul>
+          </div>
+        </div>
+
+        <h2>Quando contratar equipe</h2>
+        <table class="table">
+          <thead><tr><th>Quando</th><th>Quem</th><th>Por quê</th></tr></thead>
+          <tbody>
+            <tr><td>20+ contratos ativos</td><td><b>Assistente operacional</b></td><td>Para liberar seu tempo de documentação e atendimento básico.</td></tr>
+            <tr><td>50+ contratos ativos</td><td><b>Comercial dedicado</b></td><td>Para você focar em gestão e abrir frentes maiores.</td></tr>
+            <tr><td>100+ contratos ativos</td><td><b>Marketing local</b></td><td>Para sustentar autoridade da unidade e captação de estudantes.</td></tr>
+          </tbody>
+        </table>
+
+        <h2>Expansão de território</h2>
+        <ul>
+          <li>Domine sua cidade-sede antes de pensar em vizinha.</li>
+          <li>Crescimento orgânico em cidades vizinhas começa com indicações de clientes existentes.</li>
+          <li>Avalie expansão para nova praça só quando a sede roda sem você diariamente.</li>
+        </ul>
+      </section>
+
+      <!-- ============== M18 ============== -->
+      <section class="module" id="m18">
+        <div class="module-tag">Módulo 18 · Gestão & Crescimento</div>
+        <h1 class="module-title">Erros comuns do franqueado</h1>
+        <p class="module-lede">Cada erro abaixo já enterrou unidades. Conhecê-los é metade da blindagem.</p>
+
+        <div class="grid grid-2" style="margin-top:20px">
+          <div class="card"><h3 style="margin-top:0">1. Esperar lead chegar</h3><p class="dim">A unidade vive de prospecção ativa. Quem espera, espera demais.</p></div>
+          <div class="card"><h3 style="margin-top:0">2. Pular follow-up</h3><p class="dim">A maior parte do dinheiro está no 3º contato em diante.</p></div>
+          <div class="card"><h3 style="margin-top:0">3. Não atualizar o sistema</h3><p class="dim">O que está fora do sistema vira esquecimento, vira churn, vira prejuízo.</p></div>
+          <div class="card"><h3 style="margin-top:0">4. Negligenciar captação de estudantes</h3><p class="dim">Você abre a vaga e fica sem candidato. Empresa não esquece.</p></div>
+          <div class="card"><h3 style="margin-top:0">5. Trabalhar sem indicador</h3><p class="dim">Sem número, você só "acha" que está produzindo.</p></div>
+          <div class="card"><h3 style="margin-top:0">6. Falar demais, vender pouco</h3><p class="dim">Reunião que termina sem próximo passo = reunião perdida.</p></div>
+          <div class="card"><h3 style="margin-top:0">7. Não pedir a abertura da vaga</h3><p class="dim">Toda conversa precisa terminar com pedido. Sempre.</p></div>
+          <div class="card"><h3 style="margin-top:0">8. Operar sem rotina</h3><p class="dim">Improviso gera 1 mês bom e 5 mês ruins. Rotina gera previsibilidade.</p></div>
+        </div>
+
+        <h2 style="margin-top:36px">Quiz de fixação</h2>
+        <div class="quiz" data-quiz="q1">
+          <div class="quiz-q">Qual é o pior erro do franqueado iniciante?</div>
+          <button class="quiz-opt" data-c="0">Cobrar pouco pela bolsa-auxílio</button>
+          <button class="quiz-opt" data-c="0">Não responder e-mail formalmente</button>
+          <button class="quiz-opt" data-c="1">Esperar o lead chegar em vez de prospectar</button>
+          <button class="quiz-opt" data-c="0">Postar pouco no Instagram pessoal</button>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <div class="quiz" style="margin-top:18px" data-quiz="q2">
+          <div class="quiz-q">Quantos follow-ups em média geram o fechamento?</div>
+          <button class="quiz-opt" data-c="0">Apenas o primeiro contato</button>
+          <button class="quiz-opt" data-c="1">A partir do 3º contato em diante</button>
+          <button class="quiz-opt" data-c="0">Não fazer follow-up para não parecer chato</button>
+          <button class="quiz-opt" data-c="0">Só quando o cliente pedir</button>
+          <div class="quiz-feedback"></div>
+        </div>
+      </section>
+
+      <!-- ============== M19 ============== -->
+      <section class="module" id="m19">
+        <div class="module-tag">Módulo 19 · Gestão & Crescimento</div>
+        <h1 class="module-title">Cultura Smarter</h1>
+        <p class="module-lede">Cultura não é frase na parede. É decisão que você toma quando ninguém está vendo.</p>
+
+        <div class="grid grid-3" style="margin-top:22px">
+          <div class="card"><div class="chip gold">01</div><h3 style="margin-top:6px">Agilidade</h3><p class="dim">Resposta em horas, não em dias. Velocidade é o nosso preço de admissão.</p></div>
+          <div class="card"><div class="chip gold">02</div><h3 style="margin-top:6px">Responsabilidade</h3><p class="dim">O contrato é seu. O resultado é seu. A reputação é sua.</p></div>
+          <div class="card"><div class="chip gold">03</div><h3 style="margin-top:6px">Relacionamento</h3><p class="dim">Cliente bem cuidado renova. Estudante bem cuidado indica.</p></div>
+          <div class="card"><div class="chip gold">04</div><h3 style="margin-top:6px">Execução</h3><p class="dim">Plano vale zero. Execução vale tudo.</p></div>
+          <div class="card"><div class="chip gold">05</div><h3 style="margin-top:6px">Crescimento</h3><p class="dim">Comparar com você mesmo de 30 dias atrás é o único benchmark que importa.</p></div>
+          <div class="card"><div class="chip gold">06</div><h3 style="margin-top:6px">Profissionalismo</h3><p class="dim">Pontualidade, escrita correta, linguagem cuidada. Todo dia.</p></div>
+        </div>
+
+        <div class="callout" style="margin-top:28px">"Cultura é o conjunto de comportamentos que sobrevivem ao mau humor do franqueado."</div>
+      </section>
+
+      <!-- ============== M20 ============== -->
+      <section class="module" id="m20">
+        <div class="module-tag">Módulo 20 · Próximo passo</div>
+        <h1 class="module-title">A próxima etapa: o sistema Smarter</h1>
+        <p class="module-lede">Você concluiu a base estratégica. Agora vamos para a operação digital — onde toda essa estratégia vira execução em tempo real.</p>
+
+        <div class="grid grid-2" style="margin-top:24px">
+          <div class="card"><h3 style="margin-top:0">O sistema como CRM</h3><p class="dim">Empresas, contatos, histórico, follow-up agendado, funil visual.</p></div>
+          <div class="card"><h3 style="margin-top:0">Controle de vagas</h3><p class="dim">Abertura, status, candidatos enviados, prazo de resposta.</p></div>
+          <div class="card"><h3 style="margin-top:0">Gestão de estudantes</h3><p class="dim">Base ativa, currículos, segmentação por curso e semestre.</p></div>
+          <div class="card"><h3 style="margin-top:0">Contratos</h3><p class="dim">TCE digital, status, renovação, encerramento, financeiro.</p></div>
+          <div class="card"><h3 style="margin-top:0">Painel de crescimento</h3><p class="dim">Indicadores em tempo real, comparativos e metas.</p></div>
+          <div class="card"><h3 style="margin-top:0">Comunicação integrada</h3><p class="dim">Templates de WhatsApp, e-mail e notificações automáticas.</p></div>
+        </div>
+
+        <div class="highlight" style="margin-top:24px">
+          <div class="icon">⚡</div>
+          <div><h4>O sistema é o centro de gravidade da operação</h4><p>Tudo que você aprendeu nesses 20 módulos vive lá dentro. Estratégia sem sistema vira improviso. Sistema sem estratégia vira tela vazia. <strong>Os dois juntos viram receita.</strong></p></div>
+        </div>
+
+        <div class="card" style="margin-top:28px;text-align:center;padding:36px;background:linear-gradient(135deg,#fff,var(--paper))">
+          <div class="chip gold">Conclusão da base estratégica</div>
+          <h2 style="margin:10px 0 6px;font-size:30px">Você está pronto para o sistema.</h2>
+          <p class="dim" style="max-width:560px;margin:0 auto">A partir daqui, o treinamento entra na operação técnica da plataforma Smarter. Boa sorte — e bate meta.</p>
+          <button class="btn gold" style="margin-top:22px" id="finishBtn">Concluir treinamento</button>
+        </div>
+      </section>
+
+      <!-- ============== ADMIN PANEL ============== -->
+      <section class="module admin-only" id="admin">
+        <div class="module-tag">Administração</div>
+        <h1 class="module-title">Painel de usuários</h1>
+        <p class="module-lede">Cadastre, edite e gerencie quem tem acesso à Universidade Smarter. Cada usuário cadastrado recebe um e-mail com login, senha e link de acesso.</p>
+
+        <div class="grid grid-4" style="margin-top:24px;margin-bottom:8px">
+          <div class="stat"><div class="label">Usuários ativos</div><div class="value" id="userCount">0</div><div class="sub">Com acesso liberado</div></div>
+          <div class="stat"><div class="label">Acessos no mês</div><div class="value" id="loginCount">0</div><div class="sub">Logins registrados</div></div>
+          <div class="stat"><div class="label">Último cadastro</div><div class="value" id="lastUser" style="font-size:14px;font-weight:600;color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif">—</div><div class="sub">Nome do mais recente</div></div>
+          <div class="stat"><div class="label">Admin</div><div class="value" style="font-size:14px;font-weight:600;color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif">Você</div><div class="sub">admin@smarterestagios.com.br</div></div>
+        </div>
+
+        <h2>Cadastrar novo usuário</h2>
+        <div class="card admin-form">
+          <div class="form-row">
+            <div class="form-field"><label>Nome completo</label><input type="text" id="newName" placeholder="Ex: Maria da Silva" /></div>
+            <div class="form-field"><label>E-mail</label><input type="email" id="newEmail" placeholder="maria@smarterestagios.com.br" /></div>
+            <div class="form-field"><label>Senha</label><input type="text" id="newPass" placeholder="Mínimo 6 caracteres" /></div>
+            <div class="form-field" style="display:flex;align-items:flex-end"><button class="btn gold" id="addUserBtn" style="width:100%;justify-content:center">Cadastrar usuário</button></div>
+          </div>
+          <p class="dim" style="margin:14px 0 0;font-size:13px">Ao cadastrar, abrirá automaticamente o e-mail para envio das credenciais ao novo usuário.</p>
+        </div>
+
+        <h2>Usuários cadastrados</h2>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="table" style="border:0;border-radius:0;box-shadow:none">
+            <thead><tr><th>Nome</th><th>E-mail</th><th>Cadastrado em</th><th style="text-align:right">Ações</th></tr></thead>
+            <tbody id="userTable"></tbody>
+          </table>
+        </div>
+
+        <div class="highlight" style="margin-top:24px">
+          <div class="icon">!</div>
+          <div><h4>Importante sobre o armazenamento</h4><p>Por enquanto, os usuários ficam salvos no seu navegador. Para sincronização entre dispositivos e recuperação automática de senha, vamos integrar Firebase/Supabase numa próxima etapa — sem mexer no design.</p></div>
+        </div>
+      </section>
+
+      <!-- ============== REMOVED: VIDEOS ============== -->
+      <section class="module" id="videos_removed" style="display:none"></section>
+
+    </div> <!-- /content -->
+
+    <div style="padding:0 56px 56px;max-width:1180px">
+      <div class="nav-foot">
+        <button class="btn ghost" id="prevBtn">← Módulo anterior</button>
+        <div class="meta"><span id="ofText">Módulo 1 de 20</span></div>
+        <button class="btn gold" id="nextBtn">Próximo módulo →</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ================== AUTH + ADMIN ================== */
+(function(){
+  const ADMIN_EMAIL = "admin@smarterestagios.com.br";
+  const ADMIN_PASS  = "789852Vi@";
+  const USERS_KEY   = "smarter-users-v1";
+  const SESSION_KEY = "smarter-session-v1";
+  const LOGINS_KEY  = "smarter-logins-v1";
+
+  // simple SHA-256
+  async function sha(s){
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  }
+
+  function getUsers(){ try { return JSON.parse(localStorage.getItem(USERS_KEY)||"[]"); } catch(e){ return []; } }
+  function setUsers(arr){ localStorage.setItem(USERS_KEY, JSON.stringify(arr)); }
+  function getSession(){ try { return JSON.parse(localStorage.getItem(SESSION_KEY)||"null"); } catch(e){ return null; } }
+  function setSession(s){ if(s) localStorage.setItem(SESSION_KEY, JSON.stringify(s)); else localStorage.removeItem(SESSION_KEY); }
+  function bumpLoginCount(){
+    const k = LOGINS_KEY + "-" + new Date().toISOString().slice(0,7); // by month
+    localStorage.setItem(k, String((parseInt(localStorage.getItem(k)||"0")+1)));
+  }
+  function getLoginCountThisMonth(){
+    const k = LOGINS_KEY + "-" + new Date().toISOString().slice(0,7);
+    return parseInt(localStorage.getItem(k)||"0");
+  }
+
+  function initials(name){
+    if (!name) return "?";
+    const p = name.trim().split(/\s+/);
+    return ((p[0]||"")[0]||"").toUpperCase() + ((p[p.length-1]||"")[0]||"").toUpperCase();
+  }
+
+  // ---------- Login ----------
+  const overlay = document.getElementById("authOverlay");
+  const errEl   = document.getElementById("authError");
+  function showOverlay(){ overlay.classList.add("show"); document.body.classList.remove("authed"); document.querySelector(".app").classList.remove("authed"); document.querySelector(".mobile-bar").style.display=""; }
+  function hideOverlay(){ overlay.classList.remove("show"); document.querySelector(".app").classList.add("authed"); }
+  function showError(msg){ errEl.textContent = msg; errEl.classList.add("show"); setTimeout(()=>errEl.classList.remove("show"), 3500); }
+
+  async function tryLogin(email, pass){
+    email = (email||"").trim().toLowerCase();
+    if (email === ADMIN_EMAIL.toLowerCase() && pass === ADMIN_PASS){
+      return { email: ADMIN_EMAIL, name: "Administrador Smarter", role: "admin" };
+    }
+    const users = getUsers();
+    const u = users.find(x => x.email.toLowerCase() === email);
+    if (!u) return null;
+    const hash = await sha(pass);
+    if (hash !== u.passHash) return null;
+    return { email: u.email, name: u.name, role: "user" };
+  }
+
+  async function applySession(s){
+    setSession(s);
+    document.body.classList.toggle("is-admin", s.role === "admin");
+    const pill = document.getElementById("userPill");
+    pill.style.display = "flex";
+    pill.classList.toggle("admin", s.role === "admin");
+    document.getElementById("userAvatar").textContent = initials(s.name);
+    document.getElementById("userName").textContent = s.name + (s.role==="admin" ? " · Admin" : "");
+    hideOverlay();
+    if (s.role === "admin") renderUsers();
+    refreshAdminStats();
+  }
+
+  document.getElementById("authForm").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const email = document.getElementById("authEmail").value;
+    const pass = document.getElementById("authPass").value;
+    const session = await tryLogin(email, pass);
+    if (!session){ showError("E-mail ou senha incorretos. Verifique seus dados."); return; }
+    bumpLoginCount();
+    await applySession(session);
+    document.getElementById("authPass").value = "";
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", ()=>{
+    setSession(null);
+    document.body.classList.remove("is-admin");
+    document.getElementById("userPill").style.display = "none";
+    showOverlay();
+  });
+
+  // ---------- Admin user CRUD ----------
+  function fmtDate(iso){
+    if (!iso) return "—";
+    const d = new Date(iso);
+    return d.toLocaleDateString("pt-BR") + " · " + d.toLocaleTimeString("pt-BR", {hour:"2-digit",minute:"2-digit"});
+  }
+
+  function renderUsers(){
+    const tb = document.getElementById("userTable");
+    if (!tb) return;
+    const users = getUsers();
+    if (users.length === 0){
+      tb.innerHTML = `<tr class="user-row-empty"><td colspan="4">Nenhum usuário cadastrado ainda. Use o formulário acima para adicionar o primeiro.</td></tr>`;
+    } else {
+      tb.innerHTML = users.map(u=>`
+        <tr data-email="${u.email}">
+          <td><b>${u.name}</b></td>
+          <td>${u.email}</td>
+          <td class="user-table-meta">${fmtDate(u.createdAt)}</td>
+          <td>
+            <div class="user-table-actions">
+              <button class="ua-btn mail" data-act="mail">E-mail</button>
+              <button class="ua-btn" data-act="edit">Editar</button>
+              <button class="ua-btn danger" data-act="del">Excluir</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+    }
+    document.getElementById("userCount").textContent = users.length;
+    const last = users[users.length-1];
+    document.getElementById("lastUser").textContent = last ? last.name.split(" ")[0] : "—";
+  }
+  function refreshAdminStats(){
+    const el = document.getElementById("loginCount");
+    if (el) el.textContent = getLoginCountThisMonth();
+  }
+
+  function buildMailto(name, email, pass){
+    const subject = "Seu acesso à Universidade Smarter";
+    const link = window.location.origin + window.location.pathname;
+    const body =
+`Olá ${name.split(" ")[0]},
+
+Você acaba de ser cadastrado(a) na Universidade do Franqueado Smarter Estágios.
+
+Acesse pelo link abaixo com seus dados:
+
+🔗 Link: ${link}
+📧 E-mail: ${email}
+🔑 Senha: ${pass}
+
+Após o primeiro acesso, recomendamos que você guarde essa senha em local seguro. Em caso de dúvida, entre em contato com o administrador da sua unidade.
+
+Bons estudos!
+Equipe Smarter Estágios`;
+    return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  async function addUser(name, email, pass){
+    name = (name||"").trim();
+    email = (email||"").trim().toLowerCase();
+    pass = (pass||"").trim();
+    if (!name || !email || !pass) return { ok:false, msg:"Preencha todos os campos." };
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok:false, msg:"E-mail inválido." };
+    if (pass.length < 6) return { ok:false, msg:"Senha deve ter pelo menos 6 caracteres." };
+    if (email === ADMIN_EMAIL.toLowerCase()) return { ok:false, msg:"Este e-mail é reservado para o administrador." };
+    const users = getUsers();
+    if (users.some(u=>u.email.toLowerCase() === email)) return { ok:false, msg:"Já existe usuário com esse e-mail." };
+    const passHash = await sha(pass);
+    users.push({ name, email, passHash, createdAt: new Date().toISOString() });
+    setUsers(users);
+    return { ok:true, name, email, pass };
+  }
+
+  document.getElementById("addUserBtn") && document.getElementById("addUserBtn").addEventListener("click", async ()=>{
+    const name = document.getElementById("newName").value;
+    const email = document.getElementById("newEmail").value;
+    const pass = document.getElementById("newPass").value;
+    const res = await addUser(name, email, pass);
+    if (!res.ok){ alert(res.msg); return; }
+    renderUsers();
+    document.getElementById("newName").value="";
+    document.getElementById("newEmail").value="";
+    document.getElementById("newPass").value="";
+    // open mail draft
+    window.location.href = buildMailto(res.name, res.email, res.pass);
+  });
+
+  document.getElementById("userTable") && document.getElementById("userTable").addEventListener("click", async (e)=>{
+    const btn = e.target.closest("[data-act]"); if (!btn) return;
+    const row = btn.closest("tr"); const email = row.dataset.email;
+    const users = getUsers();
+    const idx = users.findIndex(u=>u.email===email);
+    if (idx === -1) return;
+    const u = users[idx];
+
+    if (btn.dataset.act === "del"){
+      if (!confirm(`Excluir o acesso de ${u.name} (${u.email})?`)) return;
+      users.splice(idx,1); setUsers(users); renderUsers();
+    } else if (btn.dataset.act === "edit"){
+      const newName = prompt("Novo nome:", u.name);
+      if (newName === null) return;
+      const newEmail = prompt("Novo e-mail:", u.email);
+      if (newEmail === null) return;
+      const newPass = prompt("Nova senha (deixe em branco para manter):", "");
+      if (newPass === null) return;
+      const trimmedEmail = newEmail.trim().toLowerCase();
+      if (trimmedEmail !== u.email && users.some(x=>x.email.toLowerCase()===trimmedEmail)){
+        alert("Já existe usuário com esse e-mail."); return;
+      }
+      u.name = newName.trim() || u.name;
+      u.email = trimmedEmail || u.email;
+      if (newPass.trim().length >= 6) u.passHash = await sha(newPass.trim());
+      else if (newPass.trim().length > 0) { alert("Senha deve ter pelo menos 6 caracteres. Senha não foi alterada."); }
+      setUsers(users); renderUsers();
+    } else if (btn.dataset.act === "mail"){
+      const newPass = prompt(`Gerar e enviar credenciais novamente para ${u.name}.\n\nDigite a nova senha que será enviada (ou deixe em branco para gerar uma automática):`, "");
+      if (newPass === null) return;
+      let passToSend = newPass.trim();
+      if (!passToSend){ passToSend = Math.random().toString(36).slice(2,10) + "S!"; }
+      if (passToSend.length < 6){ alert("Senha precisa ter ao menos 6 caracteres."); return; }
+      u.passHash = await sha(passToSend);
+      setUsers(users);
+      window.location.href = buildMailto(u.name, u.email, passToSend);
+    }
+  });
+
+  // ---------- Init ----------
+  const existing = getSession();
+  if (existing){
+    applySession(existing);
+  } else {
+    showOverlay();
+  }
+
+  // expose for the main app script
+  window.__smarterAuth = { renderUsers, refreshAdminStats };
+})();
+</script>
+
+<script>
+(function(){
+  // ----- module list & order -----
+  const order = ["home","m1","m2","m3","m4","m5","m6","m7","m8","m9","m10","m11","m12","m13","m14","m15","m16","m17","m18","m19","m20","admin"];
+  const moduleKeys = order.slice(1, 21); // m1..m20 only for progress
+  const titles = {
+    home:"Visão geral",
+    m1:"Boas-vindas", m2:"Quem somos", m3:"Mercado de estágios", m4:"Modelo de negócio",
+    m5:"Papel do franqueado", m6:"Captação de empresas", m7:"Scripts comerciais",
+    m8:"Vendendo o estágio", m9:"Abertura de vaga", m10:"Captação de estudantes",
+    m11:"Triagem de currículos", m12:"Atendimento", m13:"Operação do estágio",
+    m14:"Indicadores", m15:"Rotina diária", m16:"Marketing local",
+    m17:"Crescimento & escala", m18:"Erros comuns", m19:"Cultura Smarter",
+    m20:"Próximo: o sistema",
+    admin:"Painel de usuários"
+  };
+  const subs = {
+    m1:"Mentalidade, expectativas e metas dos 30 primeiros dias.",
+    m2:"Missão, visão, valores e posicionamento da Smarter.",
+    m3:"As 4 peças do processo, oportunidade e benefícios.",
+    m4:"Como a unidade ganha e a matemática da escalabilidade.",
+    m5:"Os 3 chapéus do franqueado e os comportamentos esperados.",
+    m6:"Perfil ideal, canais e como montar lista de empresas.",
+    m7:"8 scripts prontos para WhatsApp e abordagem direta.",
+    m8:"Dores, argumentos, objeções e fechamento da vaga.",
+    m9:"Checklist completo para abrir uma vaga sem ruído.",
+    m10:"Canais, conteúdos e manutenção da base de estudantes.",
+    m11:"O filtro Smarter e a montagem da shortlist.",
+    m12:"SLAs, tom de voz e protocolo de resolução de problema.",
+    m13:"O fluxo completo, do sim da empresa ao TCE assinado.",
+    m14:"Dashboard padrão e leitura dos indicadores.",
+    m15:"Blocos de horário e metas diárias da unidade.",
+    m16:"Conteúdo, frequência e construção de autoridade local.",
+    m17:"Plano de 30/60/90 dias e quando contratar equipe.",
+    m18:"Os 8 erros que matam unidade — com quiz.",
+    m19:"Os 6 valores que sustentam a operação Smarter.",
+    m20:"Visão do sistema como centro da operação."
+  };
+
+  // ----- state -----
+  const STORAGE = "smarter-training-v1";
+  let state = JSON.parse(localStorage.getItem(STORAGE) || "{}");
+  if (!state.done) state.done = {};
+  if (!state.current) state.current = "home";
+  if (!state.checks) state.checks = {};
+
+  function save(){ localStorage.setItem(STORAGE, JSON.stringify(state)); }
+
+  // ----- mod cards on home -----
+  const modCards = document.getElementById("modCards");
+  moduleKeys.forEach((k,i)=>{
+    const d = document.createElement("div");
+    d.className = "mod-card";
+    d.dataset.go = k;
+    d.innerHTML = `
+      <div class="num">MÓDULO ${String(i+1).padStart(2,"0")}</div>
+      <h4>${titles[k]}</h4>
+      <p>${subs[k]||""}</p>
+      <div class="foot"><span>${state.done[k]?"Concluído":"Pendente"}</span><span class="dot"></span></div>
+    `;
+    if (state.done[k]) d.classList.add("done");
+    modCards.appendChild(d);
+  });
+
+  // ----- navigation -----
+  function go(id, push){
+    if (!order.includes(id)) id = "home";
+    document.querySelectorAll(".module").forEach(s=>s.classList.toggle("active", s.id===id));
+    document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active", n.dataset.go===id));
+    document.getElementById("crumb").textContent = titles[id]||"Visão geral";
+    let label;
+    if (id==="home") label = "Início — visão geral";
+    else if (id==="admin") label = "Administração";
+    else label = `Módulo ${moduleKeys.indexOf(id)+1} de 20`;
+    document.getElementById("ofText").textContent = label;
+    state.current = id;
+    save();
+    // close mobile sidebar
+    document.getElementById("sidebar").classList.remove("open");
+    window.scrollTo({top:0, behavior:"instant"});
+  }
+
+  document.addEventListener("click", e=>{
+    const t = e.target.closest("[data-go]");
+    if (t){ go(t.dataset.go); }
+  });
+
+  document.getElementById("prevBtn").onclick = ()=>{
+    const i = order.indexOf(state.current);
+    go(order[Math.max(0,i-1)]);
+  };
+  document.getElementById("nextBtn").onclick = ()=>{
+    const i = order.indexOf(state.current);
+    if (state.current !== "home") markDone(state.current);
+    go(order[Math.min(order.length-1,i+1)]);
+  };
+
+  document.getElementById("completeBtn").onclick = ()=>{
+    if (state.current === "home") return;
+    markDone(state.current);
+    flashDone();
+  };
+
+  document.getElementById("finishBtn") && (document.getElementById("finishBtn").onclick = ()=>{
+    moduleKeys.forEach(k=>state.done[k]=true);
+    save(); refreshProgress(); refreshNav(); refreshCards();
+    flashDone(true);
+  });
+
+  document.getElementById("resetBtn").onclick = ()=>{
+    if (!confirm("Reiniciar todo o progresso?")) return;
+    state = {done:{}, current:"home", checks:{}};
+    save(); refreshProgress(); refreshNav(); refreshCards(); go("home");
+    document.querySelectorAll(".checklist li").forEach(li=>li.classList.remove("checked"));
+    document.querySelectorAll(".quiz-opt").forEach(o=>{o.classList.remove("correct","wrong")});
+    document.querySelectorAll(".quiz-feedback").forEach(f=>{f.textContent="";f.className="quiz-feedback"});
+  };
+
+  function markDone(id){
+    state.done[id] = true;
+    save(); refreshProgress(); refreshNav(); refreshCards();
+  }
+
+  function refreshProgress(){
+    const total = moduleKeys.length;
+    const done = moduleKeys.filter(k=>state.done[k]).length;
+    const pct = Math.round(done/total*100);
+    document.getElementById("progPct").textContent = pct;
+    document.getElementById("progFill").style.width = pct + "%";
+  }
+  function refreshNav(){
+    document.querySelectorAll(".nav-item").forEach(n=>{
+      const k = n.dataset.go;
+      n.classList.toggle("done", !!state.done[k]);
+    });
+  }
+  function refreshCards(){
+    document.querySelectorAll(".mod-card").forEach(c=>{
+      const k = c.dataset.go;
+      c.classList.toggle("done", !!state.done[k]);
+      const foot = c.querySelector(".foot span");
+      if (foot) foot.textContent = state.done[k] ? "Concluído" : "Pendente";
+    });
+  }
+
+  // (videos & marketing sections removed in this build)
+
+  // ----- checklists -----
+  document.querySelectorAll(".checklist").forEach(list=>{
+    const key = list.dataset.key;
+    if (!state.checks[key]) state.checks[key] = {};
+    [...list.children].forEach((li,i)=>{
+      if (state.checks[key][i]) li.classList.add("checked");
+      li.addEventListener("click", ()=>{
+        li.classList.toggle("checked");
+        state.checks[key][i] = li.classList.contains("checked");
+        save();
+      });
+    });
+  });
+
+  // ----- quizzes -----
+  document.querySelectorAll(".quiz").forEach(q=>{
+    const fb = q.querySelector(".quiz-feedback");
+    q.querySelectorAll(".quiz-opt").forEach(opt=>{
+      opt.addEventListener("click", ()=>{
+        const isRight = opt.dataset.c === "1";
+        q.querySelectorAll(".quiz-opt").forEach(o=>o.classList.remove("correct","wrong"));
+        opt.classList.add(isRight?"correct":"wrong");
+        if (isRight) q.querySelectorAll(".quiz-opt").forEach(o=>{if(o.dataset.c==="1")o.classList.add("correct")});
+        fb.textContent = isRight ? "Correto! Boa." : "Não é essa. Pense de novo.";
+        fb.className = "quiz-feedback " + (isRight?"ok":"err");
+      });
+    });
+  });
+
+  // ----- copy buttons -----
+  document.querySelectorAll(".copy-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const script = btn.closest(".card").querySelector(".script");
+      const text = script.innerText.replace(/^Você\s*/i,"").trim();
+      navigator.clipboard && navigator.clipboard.writeText(text);
+      const original = btn.textContent;
+      btn.textContent = "Copiado!";
+      setTimeout(()=>btn.textContent = original, 1500);
+    });
+  });
+
+  // ----- mobile -----
+  document.getElementById("mobileToggle") && (document.getElementById("mobileToggle").onclick = ()=>{
+    document.getElementById("sidebar").classList.toggle("open");
+  });
+
+  // ----- complete feedback -----
+  function flashDone(all){
+    const b = document.getElementById("completeBtn");
+    const orig = b.textContent;
+    b.textContent = all ? "Treinamento concluído ✓" : "Marcado ✓";
+    setTimeout(()=>b.textContent = orig, 1800);
+  }
+
+  // ----- init -----
+  refreshProgress();
+  refreshNav();
+  refreshCards();
+  go(state.current || "home");
+})();
+</script>
+</body>
+</html>
